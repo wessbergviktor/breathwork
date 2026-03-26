@@ -1291,6 +1291,31 @@ function getPhases(){
 }
 
 // ──────────────────────────────────────────────────
+// WAKE LOCK  (keeps screen on during session)
+// ──────────────────────────────────────────────────
+let wakeLock = null;
+
+async function requestWakeLock(){
+  try {
+    if('wakeLock' in navigator){
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch(e){ /* silently ignore — not critical */ }
+}
+
+function releaseWakeLock(){
+  if(wakeLock){ wakeLock.release(); wakeLock = null; }
+}
+
+// Re-acquire wake lock if the page becomes visible again
+// (iOS releases it when the app briefly goes to background)
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible' && running){
+    requestWakeLock();
+  }
+});
+
+// ──────────────────────────────────────────────────
 // SESSION CONTROL
 // ──────────────────────────────────────────────────
 function toggleSession(){
@@ -1306,6 +1331,7 @@ function startSes(){
   document.getElementById('startTxt').textContent='End';
   buildRoundDots();
   AMB.start(T.cat);
+  requestWakeLock();
 
   sesTimer=setInterval(()=>{
     sesSec++;
@@ -1325,6 +1351,7 @@ function endSession(){
   if(running && T && sesSec >= 60) saveSession(T, sesSec, cycCnt);
   running=false;
   AMB.stop();
+  releaseWakeLock();
   document.getElementById('startTxt').textContent='Begin';
   document.getElementById('pl').textContent='—';
   document.getElementById('cd').textContent='';
