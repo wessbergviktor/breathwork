@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Breathwork</title>
+
+<!-- PWA: makes it feel like a native app when added to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Breathwork">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#080c10">
+
+<!-- Home Screen icon (generated inline — no image file needed) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23080c10'/%3E%3Ccircle cx='90' cy='90' r='52' fill='none' stroke='%234fa8c7' stroke-width='2' opacity='0.4'/%3E%3Ccircle cx='90' cy='90' r='34' fill='%234fa8c7' opacity='0.15'/%3E%3Ccircle cx='90' cy='90' r='34' fill='none' stroke='%234fa8c7' stroke-width='1.5'/%3E%3Ccircle cx='90' cy='90' r='18' fill='%234fa8c7' opacity='0.25'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080c10;--surface:#0f1520;--card:#111c28;--ring:#1e2d3d;
+  --glow:#4fa8c7;--glow-dim:rgba(79,168,199,.12);
+  --text:#c8dde8;--text-dim:#4e6a7a;--text-muted:#2a3f50;--accent:#7ecbdf;--phase-color:#a8d8e8;
+  --wind:79,168,199;--work:160,126,203;--hype:203,126,126;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
+/* safe area for notch / Dynamic Island / home indicator */
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+.screen{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;transition:opacity .45s,transform .45s;will-change:transform,opacity}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(20px)}
+
+/* HOME */
+#home{overflow-y:auto;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.home-hdr{padding:36px 40px 14px;flex-shrink:0}
+.home-hdr h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:.3em;text-transform:uppercase}
+.home-hdr p{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-dim);margin-top:4px}
+.library{padding:0 28px 40px;display:flex;flex-direction:column;gap:24px}
+.cat-lbl{font-size:.56rem;letter-spacing:.38em;text-transform:uppercase;color:var(--text-dim);padding:8px 2px 8px;display:flex;align-items:center;gap:12px}
+.cat-lbl::after{content:'';flex:1;height:1px;background:var(--ring)}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}
+.tech-card{background:var(--card);border:1px solid var(--ring);border-radius:3px;padding:16px 18px 14px;cursor:pointer;transition:border-color .3s,background .3s,transform .2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.tech-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;transition:opacity .3s;opacity:.3}
+.tech-card.wind::before{background:rgb(var(--wind))}
+.tech-card.work::before{background:rgb(var(--work))}
+.tech-card.hype::before{background:rgb(var(--hype))}
+.tech-card:hover{}
+.tech-card.wind:hover{border-color:rgba(var(--wind),.5);background:rgba(var(--wind),.04)}
+.tech-card.work:hover{border-color:rgba(var(--work),.5);background:rgba(var(--work),.04)}
+.tech-card.hype:hover{border-color:rgba(var(--hype),.5);background:rgba(var(--hype),.04)}
+.card-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--text);letter-spacing:.04em;margin-bottom:3px}
+.card-origin{font-size:.57rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.card-rhythm{font-size:.7rem;letter-spacing:.08em;margin-bottom:7px;font-weight:400}
+.tech-card.wind .card-rhythm{color:rgba(var(--wind),1)}
+.tech-card.work .card-rhythm{color:rgba(var(--work),1)}
+.tech-card.hype .card-rhythm{color:rgba(var(--hype),1)}
+.card-desc{font-size:.66rem;color:var(--text-dim);line-height:1.55}
+
+/* PLAYER */
+#player{align-items:center;justify-content:center}
+.p-back{position:absolute;top:26px;left:28px;background:transparent;border:none;color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:color .3s;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.p-back:hover{color:var(--accent)}
+.p-back::before{content:'←';font-size:.8rem}
+.p-title{position:absolute;top:26px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.p-title h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(.95rem,2.4vw,1.3rem);letter-spacing:.22em;text-transform:uppercase;color:var(--text)}
+.p-origin{font-size:.53rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-top:3px}
+
+/* circle */
+.circ-area{display:flex;flex-direction:column;align-items:center;margin-top:8px}
+.circ-wrap{position:relative;width:clamp(210px,36vmin,310px);height:clamp(210px,36vmin,310px)}
+.orbit{position:absolute;inset:0;border-radius:50%;border:1px solid var(--ring)}
+.orbit-2{inset:-17px;border-color:rgba(30,45,61,.5)}
+.orbit-3{inset:-34px;border-color:rgba(30,45,61,.22)}
+.breath-circle{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(79,168,199,.3);box-shadow:0 0 40px rgba(79,168,199,.1),inset 0 0 60px rgba(79,168,199,.06);transform:scale(.6);transition:box-shadow .3s}
+.breath-circle::after{content:'';position:absolute;top:22%;left:30%;width:28%;height:18%;background:radial-gradient(ellipse,rgba(255,255,255,.12),transparent 80%);border-radius:50%;transform:rotate(-30deg)}
+.breath-circle.pulsing{box-shadow:0 0 60px rgba(79,168,199,.25),0 0 120px rgba(79,168,199,.1),inset 0 0 80px rgba(79,168,199,.1)}
+.circ-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none}
+.phase-lbl{font-family:'Cormorant Garamond',serif;font-size:clamp(.95rem,2.8vw,1.3rem);font-weight:400;letter-spacing:.15em;color:var(--phase-color);text-transform:uppercase;min-height:1.6rem;transition:opacity .4s}
+.count-disp{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6.5vw,2.8rem);font-weight:300;color:var(--accent);line-height:1;min-height:3rem}
+.sub-disp{font-size:.57rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-top:2px;min-height:.9rem}
+.prog-svg{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);transform:rotate(-90deg);pointer-events:none}
+.prog-track{fill:none;stroke:var(--ring);stroke-width:1.5}
+.prog-bar{fill:none;stroke:var(--glow);stroke-width:1.5;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .5s}
+
+/* strips */
+.cue-strip{display:flex;gap:3px;margin-top:18px}
+.cue-seg{height:3px;border-radius:2px;background:var(--ring);transition:background .3s,transform .3s;min-width:30px;flex:1}
+.cue-seg.active{transform:scaleY(2)}
+.cue-seg.done{opacity:.4}
+.round-track{display:flex;gap:8px;margin-top:12px;min-height:14px}
+.round-dot{width:6px;height:6px;border-radius:50%;background:var(--ring);transition:background .4s,transform .3s}
+.round-dot.active{transform:scale(1.4)}
+.round-dot.done{opacity:.45}
+
+.stats-row{display:flex;gap:28px;margin-bottom:10px}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:var(--accent);line-height:1;text-align:center}
+.stat-lbl{font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-top:2px;text-align:center}
+
+/* controls */
+.ctrl{position:absolute;bottom:30px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.start-btn{background:transparent;border:1.5px solid;font-family:'Jost',sans-serif;font-weight:300;font-size:.68rem;letter-spacing:.38em;text-transform:uppercase;padding:13px 42px;cursor:pointer;border-radius:2px;transition:all .35s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.start-btn::before{content:'';position:absolute;inset:0;opacity:.12;transform:translateX(-100%);transition:transform .35s}
+.start-btn:hover::before{transform:translateX(0)}
+.start-btn span{position:relative;z-index:1}
+.start-btn.wind{border-color:rgba(var(--wind),.8);color:rgb(var(--wind))}
+.start-btn.wind::before{background:rgb(var(--wind))}
+.start-btn.work{border-color:rgba(var(--work),.8);color:rgb(var(--work))}
+.start-btn.work::before{background:rgb(var(--work))}
+.start-btn.hype{border-color:rgba(var(--hype),.8);color:rgb(var(--hype))}
+.start-btn.hype::before{background:rgb(var(--hype))}
+.ctrl-row{display:flex;align-items:center;gap:9px;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
+.ctrl-row select,.ctrl-row input[type=range]{background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.58rem;letter-spacing:.1em;padding:4px 7px;cursor:pointer;border-radius:2px;outline:none}
+.ctrl-row select option{background:#0d1620}
+.ctrl-row input[type=range]{-webkit-appearance:none;width:85px;height:2px;border:none;border-radius:2px}
+.ctrl-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--glow);cursor:pointer}
+.warn-txt{font-size:.58rem;letter-spacing:.06em;color:rgba(203,126,126,.7);text-align:center;max-width:300px;line-height:1.6;padding:6px 10px;border:1px solid rgba(203,126,126,.2);border-radius:2px}
+
+/* wim hof tap btn */
+.tap-btn{background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;padding:8px 22px;cursor:pointer;border-radius:2px;transition:all .3s;display:none}
+.tap-btn:hover{border-color:rgba(var(--work),.6);color:rgb(var(--work))}
+
+/* sound toggle */
+.snd-btn{position:absolute;top:26px;right:28px;background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-size:.7rem;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;line-height:1;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.snd-btn:hover{border-color:var(--glow);color:var(--accent)}
+.snd-btn.off{opacity:.35}
+
+/* ambient background canvas */
+#ambBg{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0;transition:opacity 3s ease;pointer-events:none;border-radius:0}
+#ambBg.visible{opacity:1}
+/* lift all direct player children above canvas */
+#player>.p-back,#player>.snd-btn,#player>.p-title,#player>.circ-area,#player>.ctrl{position:relative;z-index:2}
+
+/* home action row */
+.home-actions{display:flex;gap:10px;padding:0 28px 4px;flex-shrink:0}
+.home-action-btn{background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;padding:8px 16px;cursor:pointer;border-radius:2px;transition:all .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.home-action-btn:hover,.home-action-btn:active{border-color:var(--glow);color:var(--accent)}
+
+/* custom card badge */
+.custom-badge{position:absolute;top:10px;right:12px;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);background:var(--ring);padding:2px 7px;border-radius:10px}
+.delete-card-btn{position:absolute;bottom:10px;right:12px;background:transparent;border:none;color:var(--text-muted);font-size:.75rem;cursor:pointer;padding:4px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .2s;line-height:1}
+.delete-card-btn:active{color:rgba(203,126,126,.8)}
+
+/* ── BUILDER SCREEN ── */
+#builder{overflow-y:auto;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.builder-hdr{padding:36px 40px 14px;flex-shrink:0;display:flex;align-items:center;gap:16px}
+.builder-hdr h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.3rem,3.5vw,2rem);letter-spacing:.28em;text-transform:uppercase}
+.b-back{background:transparent;border:none;color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.b-back::before{content:'←';font-size:.85rem}
+.b-back:hover{color:var(--accent)}
+.builder-body{padding:0 28px 60px;display:flex;flex-direction:column;gap:20px}
+.b-field{display:flex;flex-direction:column;gap:6px}
+.b-lbl{font-size:.57rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text-dim)}
+.b-input{background:var(--card);border:1px solid var(--ring);color:var(--text);font-family:'Jost',sans-serif;font-size:.85rem;font-weight:300;padding:10px 14px;border-radius:3px;outline:none;width:100%;transition:border-color .3s}
+.b-input:focus{border-color:var(--glow)}
+.b-input::placeholder{color:var(--text-muted)}
+.b-select{background:var(--card);border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.75rem;padding:10px 14px;border-radius:3px;outline:none;width:100%}
+.b-select option{background:#0d1620}
+
+/* phase rows */
+.phase-list{display:flex;flex-direction:column;gap:8px}
+.phase-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;background:var(--card);border:1px solid var(--ring);border-radius:3px;padding:10px 12px}
+.phase-row select{background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.72rem;padding:5px 8px;border-radius:2px;outline:none}
+.phase-row select option{background:#0d1620}
+.dur-input{background:transparent;border:1px solid var(--ring);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;width:52px;text-align:center;padding:4px 6px;border-radius:2px;outline:none}
+.dur-input:focus{border-color:var(--glow)}
+.phase-del{background:transparent;border:none;color:var(--text-muted);font-size:1rem;cursor:pointer;padding:2px 6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .2s}
+.phase-del:active{color:rgba(203,126,126,.8)}
+.add-phase-btn{background:transparent;border:1px dashed var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;padding:10px;border-radius:3px;cursor:pointer;width:100%;transition:all .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.add-phase-btn:hover,.add-phase-btn:active{border-color:var(--glow);color:var(--accent)}
+.save-btn{background:transparent;border:1.5px solid var(--glow);color:var(--accent);font-family:'Jost',sans-serif;font-weight:300;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;padding:14px;border-radius:2px;cursor:pointer;width:100%;transition:all .35s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;position:relative;overflow:hidden}
+.save-btn::before{content:'';position:absolute;inset:0;background:var(--glow-dim);transform:translateX(-100%);transition:transform .35s}
+.save-btn:hover::before,.save-btn:active::before{transform:translateX(0)}
+.save-btn span{position:relative;z-index:1}
+.b-error{font-size:.62rem;color:rgba(203,126,126,.8);min-height:1rem}
+.b-divider{font-size:.54rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:10px}
+.b-divider::before,.b-divider::after{content:'';flex:1;height:1px;background:var(--ring)}
+
+/* home category glow — subtle colour behind each section */
+.cat-section{position:relative;border-radius:4px;overflow:hidden}
+.cat-section::before{content:'';position:absolute;inset:0;border-radius:4px;opacity:.035;pointer-events:none;transition:opacity .6s}
+.cat-section.wind::before{background:radial-gradient(ellipse at 50% 0%,rgb(79,168,199),transparent 70%)}
+.cat-section.work::before{background:radial-gradient(ellipse at 50% 0%,rgb(160,126,203),transparent 70%)}
+.cat-section.hype::before{background:radial-gradient(ellipse at 50% 0%,rgb(203,126,126),transparent 70%)}
+
+/* ── HISTORY SCREEN ── */
+#history{overflow-y:auto;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.hist-hdr{padding:36px 40px 20px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.hist-hdr h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.3rem,3.5vw,2rem);letter-spacing:.28em;text-transform:uppercase}
+.hist-body{padding:0 28px 60px;display:flex;flex-direction:column;gap:28px}
+
+/* headline stats strip */
+.hist-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.hstat{background:var(--card);border:1px solid var(--ring);border-radius:3px;padding:14px 10px;text-align:center}
+.hstat-val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--accent);line-height:1}
+.hstat-lbl{font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-top:4px}
+
+/* weekly bar chart */
+.week-bars{display:flex;align-items:flex-end;gap:5px;height:52px}
+.wbar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:3px}
+.wbar{width:100%;background:var(--ring);border-radius:2px 2px 0 0;min-height:2px;transition:height .6s cubic-bezier(.4,0,.2,1)}
+.wbar.has-data.wind{background:rgba(79,168,199,.55)}
+.wbar.has-data.work{background:rgba(160,126,203,.55)}
+.wbar.has-data.hype{background:rgba(203,126,126,.55)}
+.wbar.has-data.mixed{background:rgba(126,203,223,.5)}
+.wbar.today{box-shadow:0 0 8px rgba(79,168,199,.4)}
+.wbar-lbl{font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+
+/* category breakdown */
+.cat-bars{display:flex;flex-direction:column;gap:8px}
+.cbar-row{display:flex;align-items:center;gap:10px}
+.cbar-name{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);width:68px;flex-shrink:0}
+.cbar-track{flex:1;height:3px;background:var(--ring);border-radius:2px;overflow:hidden}
+.cbar-fill{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.cbar-fill.wind{background:rgba(79,168,199,.7)}
+.cbar-fill.work{background:rgba(160,126,203,.7)}
+.cbar-fill.hype{background:rgba(203,126,126,.7)}
+.cbar-val{font-size:.58rem;color:var(--text-dim);width:40px;text-align:right;flex-shrink:0}
+
+/* session log */
+.log-list{display:flex;flex-direction:column;gap:6px}
+.log-item{background:var(--card);border:1px solid var(--ring);border-radius:3px;padding:11px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.log-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.log-dot.wind{background:rgb(79,168,199)}
+.log-dot.work{background:rgb(160,126,203)}
+.log-dot.hype{background:rgb(203,126,126)}
+.log-info{display:flex;flex-direction:column;gap:2px}
+.log-name{font-size:.72rem;color:var(--text);letter-spacing:.04em}
+.log-date{font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+.log-dur{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;color:var(--accent);text-align:right}
+
+.hist-empty{font-size:.68rem;color:var(--text-dim);text-align:center;padding:40px 0;letter-spacing:.1em}
+.hist-section-lbl{font-size:.54rem;letter-spacing:.32em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:10px}
+.hist-section-lbl::after{content:'';flex:1;height:1px;background:var(--ring)}
+.streak-badge{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--ring);border-radius:20px;padding:5px 12px;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
+.streak-badge.active{border-color:rgba(79,168,199,.4);color:var(--accent)}
+.streak-fire{font-size:.85rem}
+
+@media(max-width:500px){
+  .tech-grid{grid-template-columns:1fr}
+  .home-hdr{padding:28px 20px 12px}
+  .home-actions{padding:0 14px 4px}
+  .library{padding:0 14px 32px}
+  .ctrl{bottom:20px}
+  .builder-hdr{padding:28px 20px 12px}
+  .builder-body{padding:0 14px 60px}
+  .hist-stats{grid-template-columns:repeat(2,1fr)}
+  .hist-hdr{padding:28px 20px 16px}
+  .hist-body{padding:0 14px 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen" id="home">
+  <div class="home-hdr">
+    <h1>Breathwork</h1>
+    <p>Select a technique to begin</p>
+  </div>
+  <div class="home-actions">
+    <button class="home-action-btn" onclick="openBuilder()">+ Custom</button>
+    <button class="home-action-btn" onclick="openHistory()">History</button>
+  </div>
+  <div class="library">
+    <div class="cat-section wind">
+      <div class="cat-lbl">Wind Down</div>
+      <div class="tech-grid" id="g-wind"></div>
+    </div>
+    <div class="cat-section work">
+      <div class="cat-lbl">Breathwork</div>
+      <div class="tech-grid" id="g-work"></div>
+    </div>
+    <div class="cat-section hype">
+      <div class="cat-lbl">Hype Up</div>
+      <div class="tech-grid" id="g-hype"></div>
+    </div>
+    <div id="custom-section" style="display:none">
+      <div class="cat-lbl">My Techniques</div>
+      <div class="tech-grid" id="g-custom"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="screen hidden" id="history">
+  <div class="hist-hdr">
+    <button class="b-back" onclick="closeHistory()">Back</button>
+    <h2>History</h2>
+    <div></div>
+  </div>
+  <div class="hist-body">
+    <div id="histEmpty" class="hist-empty" style="display:none">
+      No sessions yet — complete your first practice to see history here.
+    </div>
+
+    <div id="histContent" style="display:none">
+      <!-- Streak -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px">
+        <div class="streak-badge" id="streakBadge">
+          <span class="streak-fire">🔥</span>
+          <span id="streakTxt">0 day streak</span>
+        </div>
+        <div class="streak-badge" id="bestStreakBadge">
+          <span>🏆</span>
+          <span id="bestStreakTxt">Best: 0 days</span>
+        </div>
+      </div>
+
+      <!-- Headline stats -->
+      <div class="hist-stats">
+        <div class="hstat">
+          <div class="hstat-val" id="hTotalMin">0</div>
+          <div class="hstat-lbl">Total min</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hSessions">0</div>
+          <div class="hstat-lbl">Sessions</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hThisWeek">0</div>
+          <div class="hstat-lbl">This week</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" id="hAvgMin">0</div>
+          <div class="hstat-lbl">Avg min</div>
+        </div>
+      </div>
+
+      <!-- Weekly chart -->
+      <div>
+        <div class="hist-section-lbl" style="margin-bottom:10px">Last 7 days</div>
+        <div class="week-bars" id="weekBars"></div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div>
+        <div class="hist-section-lbl" style="margin-bottom:10px">By category</div>
+        <div class="cat-bars" id="catBars"></div>
+      </div>
+
+      <!-- Session log -->
+      <div>
+        <div class="hist-section-lbl" style="margin-bottom:10px">Recent sessions</div>
+        <div class="log-list" id="logList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER -->
+<div class="screen hidden" id="player">
+  <canvas id="ambBg"></canvas>
+  <button class="p-back" onclick="goHome()">Back</button>
+  <button class="snd-btn" id="sndBtn" onclick="toggleSound()" title="Toggle sound">♪</button>
+  <div class="p-title">
+    <h2 id="pt-name">—</h2>
+    <div class="p-origin" id="pt-origin"></div>
+  </div>
+
+  <div class="circ-area">
+    <div class="circ-wrap">
+      <div class="orbit orbit-3"></div>
+      <div class="orbit orbit-2"></div>
+      <div class="orbit"></div>
+      <svg class="prog-svg" viewBox="0 0 252 252">
+        <circle class="prog-track" cx="126" cy="126" r="121"/>
+        <circle class="prog-bar" id="prog" cx="126" cy="126" r="121" stroke-dasharray="760" stroke-dashoffset="760"/>
+      </svg>
+      <div class="breath-circle" id="bc"></div>
+      <div class="circ-text">
+        <div class="phase-lbl" id="pl">—</div>
+        <div class="count-disp" id="cd"></div>
+        <div class="sub-disp" id="sd"></div>
+      </div>
+    </div>
+    <div class="cue-strip" id="cueStrip"></div>
+    <div class="round-track" id="roundTrack"></div>
+  </div>
+
+  <div class="ctrl" id="ctrl">
+    <div class="stats-row">
+      <div class="stat"><div class="stat-val" id="sCyc">0</div><div class="stat-lbl">Cycles</div></div>
+      <div class="stat"><div class="stat-val" id="sTime">0:00</div><div class="stat-lbl">Elapsed</div></div>
+    </div>
+    <button class="start-btn wind" id="startBtn" onclick="toggleSession()">
+      <span id="startTxt">Begin</span>
+    </button>
+    <div class="ctrl-row" id="rowDur">
+      <span>Duration</span>
+      <select id="durSel">
+        <option value="3">3 min</option>
+        <option value="5" selected>5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+        <option value="0">Open</option>
+      </select>
+    </div>
+    <div class="ctrl-row" id="rowRatio" style="display:none">
+      <span>Inhale</span>
+      <input type="range" id="inhaleSl" min="3" max="8" value="4" step="1"
+        oninput="document.getElementById('ratioLbl').textContent=this.value+'s\u00b7'+(this.value*2)+'s'">
+      <span id="ratioLbl">4s·8s</span>
+    </div>
+    <div class="ctrl-row" id="rowKap" style="display:none">
+      <span>Pace</span>
+      <input type="range" id="kapSl" min="1" max="3" value="1" step="1"
+        oninput="document.getElementById('kapLbl').textContent=['Slow','Medium','Fast'][this.value-1]">
+      <span id="kapLbl">Slow</span>
+    </div>
+    <div class="ctrl-row" id="rowWH" style="display:none">
+      <span>Rounds</span>
+      <select id="whRnd"><option value="3" selected>3</option><option value="4">4</option></select>
+    </div>
+    <button class="tap-btn" id="tapBtn" onclick="whAdvance()">Next Phase →</button>
+    <div class="warn-txt" id="warnTxt" style="display:none"></div>
+  </div>
+</div>
+
+<!-- BUILDER -->
+<div class="screen hidden" id="builder">
+  <div class="builder-hdr">
+    <button class="b-back" onclick="closeBuilder()">Back</button>
+    <h2>Custom Technique</h2>
+  </div>
+  <div class="builder-body">
+    <div class="b-field">
+      <div class="b-lbl">Name</div>
+      <input class="b-input" id="bName" type="text" placeholder="e.g. My Morning Breath" maxlength="40">
+    </div>
+    <div class="b-field">
+      <div class="b-lbl">Category</div>
+      <select class="b-select" id="bCat">
+        <option value="wind">Wind Down</option>
+        <option value="work" selected>Breathwork</option>
+        <option value="hype">Hype Up</option>
+      </select>
+    </div>
+    <div class="b-field">
+      <div class="b-lbl">Description (optional)</div>
+      <input class="b-input" id="bDesc" type="text" placeholder="What is this technique for?" maxlength="120">
+    </div>
+
+    <div class="b-divider">Phases</div>
+    <div class="b-field">
+      <div class="b-lbl">Add up to 6 phases — set label and duration in seconds</div>
+      <div class="phase-list" id="phaseList"></div>
+      <button class="add-phase-btn" id="addPhaseBtn" onclick="addPhaseRow()">+ Add phase</button>
+    </div>
+
+    <div class="b-error" id="bError"></div>
+    <button class="save-btn" onclick="saveCustom()"><span>Save Technique</span></button>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────
+// AUDIO ENGINE  (Web Audio API — no files needed)
+// ──────────────────────────────────────────────────
+let audioCtx = null;
+let soundOn = true;
+
+function getCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function toggleSound(){
+  soundOn = !soundOn;
+  const btn = document.getElementById('sndBtn');
+  btn.classList.toggle('off', !soundOn);
+  btn.title = soundOn ? 'Sound on' : 'Sound off';
+  if(running && T){
+    if(!soundOn) AMB.stop();
+    else AMB.start(T.cat);
+  }
+}
+
+/*  Pentatonic bowl tones — Em penta: E B G D + tick
+    Inhale   → E5  659 Hz  bright, rising
+    Hold     → B4  494 Hz  suspended, full
+    Exhale   → G4  392 Hz  warm, releasing
+    HoldLow  → D4  294 Hz  quiet, grounded
+    Tick     → A5  880 Hz  soft countdown click   */
+const PHASE_FREQ = {
+  'Inhale':  659, 'Inhale+': 740,
+  'Hold':    494,
+  'Exhale':  392, 'Right out': 370, 'Left in': 659,
+  'HoldLow': 294,
+  'tick':    880
+};
+
+// Map phase labels → tone key
+function freqFor(label){
+  if(!label) return 392;
+  const l = label.toLowerCase();
+  if(l.includes('inhale')) return PHASE_FREQ['Inhale'];
+  if(l.includes('hold') && l !== 'holdlow') return PHASE_FREQ['Hold'];
+  if(l.includes('exhale') || l.includes('out')) return PHASE_FREQ['Exhale'];
+  return PHASE_FREQ['HoldLow'];
+}
+
+/* Singing-bowl envelope: instant attack, exponential ring-out */
+function bowl(freq, vol=0.22, ringMs=1800){
+  if(!soundOn) return;
+  try {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    const ringS = ringMs / 1000;
+
+    // Fundamental
+    const osc1 = ctx.createOscillator();
+    const g1   = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.value = freq;
+    g1.gain.setValueAtTime(0, t);
+    g1.gain.linearRampToValueAtTime(vol, t + 0.015);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + ringS);
+    osc1.connect(g1); g1.connect(ctx.destination);
+    osc1.start(t); osc1.stop(t + ringS);
+
+    // 2nd harmonic (slight shimmer, quieter)
+    const osc2 = ctx.createOscillator();
+    const g2   = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.value = freq * 2.756; // slightly inharmonic, bowl-like
+    g2.gain.setValueAtTime(0, t);
+    g2.gain.linearRampToValueAtTime(vol * 0.18, t + 0.015);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + ringS * 0.6);
+    osc2.connect(g2); g2.connect(ctx.destination);
+    osc2.start(t); osc2.stop(t + ringS * 0.6);
+  } catch(e){}
+}
+
+/* Soft tick — countdown last 3 seconds */
+function tick(){
+  if(!soundOn) return;
+  try {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.07, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.12);
+  } catch(e){}
+}
+
+/* Play bowl tone for a named phase label */
+function playPhase(label){
+  bowl(freqFor(label));
+}
+
+// ──────────────────────────────────────────────────
+// HAPTIC ENGINE  (Vibration API)
+// ──────────────────────────────────────────────────
+// Patterns in ms: [vibrate, pause, vibrate, ...]
+const HAPTIC = {
+  inhale:  [25],           // single short pulse — begin inhale
+  hold:    [15, 60, 15],   // double tap — begin hold
+  exhale:  [60],           // longer pulse — begin exhale
+  tick:    [8],            // tiny tick — countdown last 3s
+  complete:[30,80,30,80,60] // celebration — session done
+};
+
+function haptic(type){
+  try {
+    if(navigator.vibrate) navigator.vibrate(HAPTIC[type] || [20]);
+  } catch(e){}
+}
+
+function playAndFeel(label){
+  playPhase(label);
+  const l = (label||'').toLowerCase();
+  if(l.includes('inhale') || l.includes('left') || l.includes('right')) haptic('inhale');
+  else if(l.includes('exhale') || l.includes('out')) haptic('exhale');
+  else if(l.includes('hold')) haptic('hold');
+}
+
+// ──────────────────────────────────────────────────
+// AMBIENT BACKGROUND  (canvas, per-category scenes)
+// ──────────────────────────────────────────────────
+const BG = (() => {
+  let canvas, ctx2d, raf, scene = null, particles = [], frame = 0;
+
+  function init(){
+    canvas = document.getElementById('ambBg');
+    ctx2d  = canvas.getContext('2d');
+  }
+
+  function resize(){
+    canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
+    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+    ctx2d.scale(window.devicePixelRatio, window.devicePixelRatio);
+    buildParticles();
+  }
+
+  function buildParticles(){
+    const W = canvas.offsetWidth, H = canvas.offsetHeight;
+    particles = [];
+    if(scene === 'wind'){
+      // Rain drops
+      for(let i=0;i<55;i++) particles.push({
+        x: Math.random()*W, y: Math.random()*H,
+        len: 8+Math.random()*18, speed: 1.2+Math.random()*2,
+        op: 0.04+Math.random()*0.12, angle: 0.18
+      });
+      // Floating deep-water orbs
+      for(let i=0;i<8;i++) particles.push({
+        type:'orb', x:Math.random()*W, y:H*0.3+Math.random()*H*0.7,
+        r:30+Math.random()*60, dx:(Math.random()-.5)*0.15,
+        dy:-(0.05+Math.random()*0.1), op:0.04+Math.random()*0.06, phase:Math.random()*Math.PI*2
+      });
+    } else if(scene === 'work'){
+      // Mist orbs
+      for(let i=0;i<14;i++) particles.push({
+        type:'mist', x:Math.random()*W, y:H*0.2+Math.random()*H*0.8,
+        r:60+Math.random()*120, dx:(Math.random()-.5)*0.2,
+        dy:-(0.03+Math.random()*0.07), op:0.025+Math.random()*0.04, phase:Math.random()*Math.PI*2
+      });
+      // Stars
+      for(let i=0;i<60;i++) particles.push({
+        type:'star', x:Math.random()*W, y:Math.random()*H*0.65,
+        r:0.5+Math.random()*1.2, op:0.2+Math.random()*0.6, twinkle:Math.random()*Math.PI*2
+      });
+    } else if(scene === 'hype'){
+      // Energy streaks moving upward
+      for(let i=0;i<35;i++) particles.push({
+        x:Math.random()*W, y:H+Math.random()*H,
+        w:1+Math.random()*2, speed:1.5+Math.random()*3.5,
+        len:20+Math.random()*60, op:0.1+Math.random()*0.3,
+        hue: 10+Math.random()*30 // orange-red range
+      });
+    }
+  }
+
+  function drawWind(W, H){
+    // Deep ocean gradient
+    const g = ctx2d.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, '#010a14');
+    g.addColorStop(1, '#031828');
+    ctx2d.fillStyle = g;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Subtle caustic light from above
+    const radG = ctx2d.createRadialGradient(W/2,-H*0.1,0, W/2,-H*0.1, H*0.8);
+    radG.addColorStop(0, 'rgba(30,90,130,0.12)');
+    radG.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx2d.fillStyle = radG;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Draw orbs first
+    particles.filter(p=>p.type==='orb').forEach(p=>{
+      p.x += p.dx; p.y += p.dy;
+      if(p.y + p.r < 0) p.y = H + p.r;
+      if(p.x < -p.r) p.x = W + p.r;
+      if(p.x > W + p.r) p.x = -p.r;
+      p.phase += 0.008;
+      const pulse = Math.sin(p.phase) * 0.3 + 0.7;
+      const og = ctx2d.createRadialGradient(p.x,p.y,0, p.x,p.y, p.r*pulse);
+      og.addColorStop(0, `rgba(40,130,180,${p.op*1.5})`);
+      og.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx2d.fillStyle = og;
+      ctx2d.beginPath();
+      ctx2d.arc(p.x, p.y, p.r*pulse, 0, Math.PI*2);
+      ctx2d.fill();
+    });
+
+    // Draw rain drops
+    ctx2d.save();
+    particles.filter(p=>!p.type).forEach(p=>{
+      p.y += p.speed;
+      p.x += p.speed * p.angle;
+      if(p.y > H){ p.y = -p.len; p.x = Math.random()*W; }
+      ctx2d.strokeStyle = `rgba(100,190,230,${p.op})`;
+      ctx2d.lineWidth = 0.7;
+      ctx2d.beginPath();
+      ctx2d.moveTo(p.x, p.y);
+      ctx2d.lineTo(p.x + p.len*p.angle, p.y + p.len);
+      ctx2d.stroke();
+    });
+    ctx2d.restore();
+  }
+
+  function drawWork(W, H){
+    // Deep indigo/purple sky
+    const g = ctx2d.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, '#04020e');
+    g.addColorStop(0.5,'#0d0620');
+    g.addColorStop(1, '#160a30');
+    ctx2d.fillStyle = g;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Moon glow
+    const mg = ctx2d.createRadialGradient(W*0.72, H*0.15, 0, W*0.72, H*0.15, H*0.4);
+    mg.addColorStop(0,'rgba(180,160,220,0.08)');
+    mg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx2d.fillStyle = mg;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Stars
+    particles.filter(p=>p.type==='star').forEach(p=>{
+      p.twinkle += 0.02;
+      const op = p.op * (0.6 + Math.sin(p.twinkle)*0.4);
+      ctx2d.fillStyle = `rgba(220,210,255,${op})`;
+      ctx2d.beginPath();
+      ctx2d.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx2d.fill();
+    });
+
+    // Mountain silhouettes — two layers for depth
+    // Far mountain (lighter)
+    ctx2d.fillStyle = 'rgba(18,8,40,0.9)';
+    ctx2d.beginPath();
+    ctx2d.moveTo(0,H);
+    ctx2d.lineTo(0, H*0.62);
+    ctx2d.lineTo(W*0.12, H*0.42);
+    ctx2d.lineTo(W*0.22, H*0.54);
+    ctx2d.lineTo(W*0.35, H*0.30);
+    ctx2d.lineTo(W*0.48, H*0.50);
+    ctx2d.lineTo(W*0.60, H*0.35);
+    ctx2d.lineTo(W*0.72, H*0.48);
+    ctx2d.lineTo(W*0.85, H*0.28);
+    ctx2d.lineTo(W*0.93, H*0.44);
+    ctx2d.lineTo(W, H*0.55);
+    ctx2d.lineTo(W, H);
+    ctx2d.closePath();
+    ctx2d.fill();
+
+    // Near mountain (darker)
+    ctx2d.fillStyle = 'rgba(8,3,18,1)';
+    ctx2d.beginPath();
+    ctx2d.moveTo(0,H);
+    ctx2d.lineTo(0, H*0.78);
+    ctx2d.lineTo(W*0.08, H*0.60);
+    ctx2d.lineTo(W*0.20, H*0.70);
+    ctx2d.lineTo(W*0.30, H*0.52);
+    ctx2d.lineTo(W*0.42, H*0.65);
+    ctx2d.lineTo(W*0.55, H*0.48);
+    ctx2d.lineTo(W*0.65, H*0.62);
+    ctx2d.lineTo(W*0.78, H*0.44);
+    ctx2d.lineTo(W*0.88, H*0.60);
+    ctx2d.lineTo(W, H*0.70);
+    ctx2d.lineTo(W, H);
+    ctx2d.closePath();
+    ctx2d.fill();
+
+    // Mist
+    particles.filter(p=>p.type==='mist').forEach(p=>{
+      p.x += p.dx; p.y += p.dy;
+      if(p.y + p.r < H*0.3) p.y = H + p.r;
+      if(p.x < -p.r) p.x = W+p.r;
+      if(p.x > W+p.r) p.x = -p.r;
+      p.phase += 0.005;
+      const pulse = 0.85 + Math.sin(p.phase)*0.15;
+      const mg2 = ctx2d.createRadialGradient(p.x,p.y,0, p.x,p.y, p.r*pulse);
+      mg2.addColorStop(0,`rgba(120,80,200,${p.op})`);
+      mg2.addColorStop(1,'rgba(0,0,0,0)');
+      ctx2d.fillStyle = mg2;
+      ctx2d.beginPath();
+      ctx2d.arc(p.x, p.y, p.r*pulse, 0, Math.PI*2);
+      ctx2d.fill();
+    });
+  }
+
+  function drawHype(W, H){
+    // Dark base with fire glow at bottom
+    const g = ctx2d.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#080404');
+    g.addColorStop(0.6,'#100604');
+    g.addColorStop(1,'#2a0c00');
+    ctx2d.fillStyle = g;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Fire glow from below
+    const fg = ctx2d.createRadialGradient(W/2, H+H*0.2, 0, W/2, H+H*0.2, H*1.1);
+    fg.addColorStop(0,'rgba(220,80,20,0.22)');
+    fg.addColorStop(0.4,'rgba(160,40,0,0.12)');
+    fg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx2d.fillStyle = fg;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Far jagged mountains
+    ctx2d.fillStyle = 'rgba(28,10,4,0.9)';
+    ctx2d.beginPath();
+    ctx2d.moveTo(0,H);
+    ctx2d.lineTo(0, H*0.55);
+    ctx2d.lineTo(W*0.07, H*0.35);
+    ctx2d.lineTo(W*0.13, H*0.50);
+    ctx2d.lineTo(W*0.22, H*0.22);
+    ctx2d.lineTo(W*0.30, H*0.45);
+    ctx2d.lineTo(W*0.40, H*0.28);
+    ctx2d.lineTo(W*0.50, H*0.42);
+    ctx2d.lineTo(W*0.58, H*0.18);
+    ctx2d.lineTo(W*0.66, H*0.40);
+    ctx2d.lineTo(W*0.75, H*0.25);
+    ctx2d.lineTo(W*0.83, H*0.45);
+    ctx2d.lineTo(W*0.92, H*0.30);
+    ctx2d.lineTo(W, H*0.50);
+    ctx2d.lineTo(W, H);
+    ctx2d.closePath();
+    ctx2d.fill();
+
+    // Near mountains
+    ctx2d.fillStyle = 'rgba(10,3,0,1)';
+    ctx2d.beginPath();
+    ctx2d.moveTo(0,H);
+    ctx2d.lineTo(0, H*0.72);
+    ctx2d.lineTo(W*0.10, H*0.55);
+    ctx2d.lineTo(W*0.18, H*0.68);
+    ctx2d.lineTo(W*0.28, H*0.48);
+    ctx2d.lineTo(W*0.36, H*0.62);
+    ctx2d.lineTo(W*0.46, H*0.44);
+    ctx2d.lineTo(W*0.54, H*0.58);
+    ctx2d.lineTo(W*0.63, H*0.42);
+    ctx2d.lineTo(W*0.72, H*0.60);
+    ctx2d.lineTo(W*0.82, H*0.46);
+    ctx2d.lineTo(W*0.90, H*0.64);
+    ctx2d.lineTo(W, H*0.58);
+    ctx2d.lineTo(W, H);
+    ctx2d.closePath();
+    ctx2d.fill();
+
+    // Energy streaks moving upward
+    particles.filter(p=>!p.type).forEach(p=>{
+      p.y -= p.speed;
+      if(p.y + p.len < 0){ p.y = H + Math.random()*H; p.x = Math.random()*W; }
+      const sg = ctx2d.createLinearGradient(p.x, p.y+p.len, p.x, p.y);
+      sg.addColorStop(0,'rgba(0,0,0,0)');
+      sg.addColorStop(1,`hsla(${p.hue},90%,55%,${p.op})`);
+      ctx2d.strokeStyle = sg;
+      ctx2d.lineWidth = p.w;
+      ctx2d.beginPath();
+      ctx2d.moveTo(p.x, p.y+p.len);
+      ctx2d.lineTo(p.x, p.y);
+      ctx2d.stroke();
+    });
+
+    // Pulsing energy ring from bottom center
+    const r = (H * 0.15) + Math.sin(frame * 0.04) * (H * 0.05);
+    const er = ctx2d.createRadialGradient(W/2, H*0.92, r*0.3, W/2, H*0.92, r);
+    er.addColorStop(0,'rgba(255,120,30,0.0)');
+    er.addColorStop(0.7,'rgba(220,70,10,0.12)');
+    er.addColorStop(1,'rgba(0,0,0,0)');
+    ctx2d.fillStyle = er;
+    ctx2d.beginPath();
+    ctx2d.arc(W/2, H*0.92, r, 0, Math.PI*2);
+    ctx2d.fill();
+  }
+
+  function loop(){
+    raf = requestAnimationFrame(loop);
+    frame++;
+    const W = canvas.offsetWidth, H = canvas.offsetHeight;
+    ctx2d.clearRect(0,0,W,H);
+    if(scene==='wind') drawWind(W,H);
+    else if(scene==='work') drawWork(W,H);
+    else if(scene==='hype') drawHype(W,H);
+  }
+
+  return {
+    start(cat){
+      if(!canvas) init();
+      scene = cat;
+      resize();
+      cancelAnimationFrame(raf);
+      loop();
+      requestAnimationFrame(()=> canvas.classList.add('visible'));
+    },
+    stop(){
+      canvas.classList.remove('visible');
+      setTimeout(()=>{ cancelAnimationFrame(raf); scene=null; }, 3000);
+    },
+    resize
+  };
+})();
+
+window.addEventListener('resize', ()=> BG.resize && BG.resize());
+
+// ──────────────────────────────────────────────────
+// AMBIENT SOUND ENGINE
+// ──────────────────────────────────────────────────
+const AMB = (() => {
+  let nodes = [];   // all running nodes to stop later
+  let masterGain = null;
+  let active = false;
+
+  function master(){
+    const ctx = getCtx();
+    if(!masterGain || masterGain.context.state === 'closed'){
+      masterGain = ctx.createGain();
+      masterGain.gain.value = 0;
+      masterGain.connect(ctx.destination);
+    }
+    return masterGain;
+  }
+
+  function fadeIn(g, target=0.9, dur=3){
+    const ctx = getCtx(), t = ctx.currentTime;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(target, t + dur);
+  }
+
+  function fadeOut(g, dur=3){
+    const ctx = getCtx(), t = ctx.currentTime;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(0, t + dur);
+  }
+
+  // --- WIND DOWN: rain + bowl drone ---
+  function startWind(){
+    const ctx = getCtx();
+    const mg = master();
+    fadeIn(mg, 0.85, 4);
+
+    // Rain — two layers of filtered noise
+    const bufLen = ctx.sampleRate * 3;
+    const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<bufLen;i++) d[i] = (Math.random()*2-1);
+
+    [
+      {freq:1400, Q:0.8, gain:0.13},
+      {freq:3200, Q:0.5, gain:0.08},
+      {freq:600,  Q:1.2, gain:0.06}
+    ].forEach(f=>{
+      const src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = f.freq; bp.Q.value = f.Q;
+      const g = ctx.createGain(); g.gain.value = f.gain;
+      src.connect(bp); bp.connect(g); g.connect(mg);
+      src.start(); nodes.push(src, g);
+    });
+
+    // Bowl drone — A2 with slow vibrato
+    [110, 165, 220].forEach((freq, i)=>{
+      const osc = ctx.createOscillator();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.10 + i*0.03;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 0.8;
+      const g = ctx.createGain(); g.gain.value = [0.07, 0.04, 0.02][i];
+      lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      osc.connect(g); g.connect(mg);
+      osc.start(); lfo.start();
+      nodes.push(osc, lfo, g);
+    });
+  }
+
+  // --- BREATHWORK: cave hum + slow chord swells ---
+  function startWork(){
+    const ctx = getCtx();
+    const mg = master();
+    fadeIn(mg, 0.8, 4);
+
+    // Deep cave resonance — E1 + harmonics
+    [41.2, 82.4, 123.5, 164.8].forEach((freq, i)=>{
+      const osc = ctx.createOscillator();
+      osc.type = i===0 ? 'sine' : 'sine';
+      osc.frequency.value = freq;
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.07 + i*0.02;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 0.3;
+      lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      const g = ctx.createGain(); g.gain.value = [0.09, 0.05, 0.025, 0.012][i];
+      const tremoloLfo = ctx.createOscillator();
+      tremoloLfo.frequency.value = 0.05 + i*0.015;
+      const tremG = ctx.createGain(); tremG.gain.value = 0.4;
+      tremoloLfo.connect(tremG); tremG.connect(g.gain);
+      osc.connect(g); g.connect(mg);
+      osc.start(); lfo.start(); tremoloLfo.start();
+      nodes.push(osc, lfo, tremoloLfo, g);
+    });
+
+    // Mystical shimmer — high partial
+    const shimmer = ctx.createOscillator();
+    shimmer.type = 'sine'; shimmer.frequency.value = 528;
+    const shimG = ctx.createGain(); shimG.gain.value = 0.018;
+    const shimLfo = ctx.createOscillator(); shimLfo.frequency.value = 0.12;
+    const shimLfoG = ctx.createGain(); shimLfoG.gain.value = 2;
+    shimLfo.connect(shimLfoG); shimLfoG.connect(shimmer.frequency);
+    shimmer.connect(shimG); shimG.connect(mg);
+    shimmer.start(); shimLfo.start();
+    nodes.push(shimmer, shimLfo, shimG);
+  }
+
+  // --- HYPE UP: tribal drums + energy hum ---
+  function startHype(){
+    const ctx = getCtx();
+    const mg = master();
+    fadeIn(mg, 0.75, 2);
+
+    // Energy hum — D2 rising pulse
+    [73.4, 110, 146.8].forEach((freq, i)=>{
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth'; osc.frequency.value = freq;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 300 + i*80;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.2 + i*0.1;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 1.5;
+      lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      const g = ctx.createGain(); g.gain.value = [0.055, 0.03, 0.015][i];
+      osc.connect(lp); lp.connect(g); g.connect(mg);
+      osc.start(); lfo.start();
+      nodes.push(osc, lfo, g);
+    });
+
+    // Tribal kick drum — scheduled repeating pattern
+    const BPM = 128, beat = 60/BPM;
+    // Pattern: kick on 1, 2.5, 3  (feel of tribal 6/8)
+    const pattern = [0, beat*1.5, beat*2, beat*3.5, beat*4];
+    let nextBeat = ctx.currentTime + 0.1;
+
+    function scheduleDrums(){
+      const lookAhead = 0.25;
+      while(nextBeat < ctx.currentTime + lookAhead){
+        pattern.forEach(offset=>{
+          const t = nextBeat + offset;
+          // Kick
+          const ko = ctx.createOscillator();
+          ko.type = 'sine';
+          ko.frequency.setValueAtTime(160, t);
+          ko.frequency.exponentialRampToValueAtTime(38, t + 0.18);
+          const kg = ctx.createGain();
+          kg.gain.setValueAtTime(0.55, t);
+          kg.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+          ko.connect(kg); kg.connect(mg);
+          ko.start(t); ko.stop(t + 0.3);
+          // Hi snare every 2nd beat
+          if(offset === beat*2 || offset === beat*3.5){
+            const bufLen = Math.floor(ctx.sampleRate * 0.12);
+            const nbuf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+            const nd = nbuf.getChannelData(0);
+            for(let i=0;i<bufLen;i++) nd[i]=Math.random()*2-1;
+            const nsrc = ctx.createBufferSource(); nsrc.buffer = nbuf;
+            const nhp = ctx.createBiquadFilter(); nhp.type='highpass'; nhp.frequency.value=1800;
+            const ng = ctx.createGain();
+            ng.gain.setValueAtTime(0.18, t);
+            ng.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+            nsrc.connect(nhp); nhp.connect(ng); ng.connect(mg);
+            nsrc.start(t); nsrc.stop(t+0.12);
+          }
+        });
+        nextBeat += beat * 4; // one bar
+      }
+      if(active) drumTimer = setTimeout(scheduleDrums, 100);
+    }
+    scheduleDrums();
+  }
+
+  let drumTimer = null;
+
+  return {
+    start(cat){
+      if(!soundOn) return;
+      active = true;
+      if(cat==='wind') startWind();
+      else if(cat==='work') startWork();
+      else if(cat==='hype') startHype();
+    },
+    stop(){
+      active = false;
+      clearTimeout(drumTimer);
+      if(masterGain) fadeOut(masterGain, 2.5);
+      setTimeout(()=>{
+        nodes.forEach(n=>{ try{ n.stop(); }catch(e){} try{ n.disconnect(); }catch(e){} });
+        nodes = [];
+        if(masterGain){ try{ masterGain.disconnect(); }catch(e){} masterGain = null; }
+      }, 3000);
+    }
+  };
+})();
+
+// ──────────────────────────────────────────────────
+// TECHNIQUE DATA
+// ──────────────────────────────────────────────────
+const TECHS = [
+  // WIND DOWN
+  { id:'resonance', cat:'wind', name:'Resonance Breathing', origin:'Stephen Elliott · Coherent Breathing',
+    rhythm:'5s in · 5s out',
+    desc:'~5–6 breaths per minute creates heart rate variability coherence, balancing the autonomic nervous system. The most evidence-backed relaxation technique.',
+    type:'timed', phases:[{l:'Inhale',d:5,s:1.0},{l:'Exhale',d:5,s:.55}], ctrls:['dur'] },
+
+  { id:'478', cat:'wind', name:'4-7-8 Breath', origin:'Dr. Andrew Weil · Pranayama',
+    rhythm:'In 4 · Hold 7 · Out 8',
+    desc:'A "natural tranquilizer" for the nervous system. The 7-count hold and long exhale strongly activate the vagus nerve, reducing cortisol rapidly.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:7,s:1.0},{l:'Exhale',d:8,s:.55}], ctrls:['dur'] },
+
+  { id:'physiological', cat:'wind', name:'Physiological Sigh', origin:'Stanford · Yackle & Bhatt',
+    rhythm:'Double inhale · Long exhale',
+    desc:'Two quick nasal inhales then a slow, complete exhale. Stanford research shows this is the fastest way to reduce acute physiological stress in a single breath.',
+    type:'timed', phases:[{l:'Inhale',d:2,s:.78},{l:'Inhale+',d:1,s:1.0},{l:'Exhale',d:6,s:.55}], ctrls:['dur'] },
+
+  { id:'21', cat:'wind', name:'2:1 Breathing', origin:'Yoga Pranayama tradition',
+    rhythm:'Exhale 2× the inhale',
+    desc:'Exhale is twice as long as the inhale, activating the parasympathetic rest response. Ideal before sleep or after intense exercise.',
+    type:'timed', getPhases:()=>{const i=+document.getElementById('inhaleSl').value;return[{l:'Inhale',d:i,s:1.0},{l:'Exhale',d:i*2,s:.55}]}, ctrls:['dur','ratio'] },
+
+  // BREATHWORK
+  { id:'box', cat:'work', name:'Box Breathing', origin:'Navy SEALs · Combat Stress Protocol',
+    rhythm:'4 · 4 · 4 · 4',
+    desc:'Equal counts of inhale, hold, exhale, hold. Used by Navy SEALs to calm the nervous system under pressure. Promotes balanced focus without sedation.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:4,s:1.0},{l:'Exhale',d:4,s:.55},{l:'Hold',d:4,s:.55}], ctrls:['dur'] },
+
+  { id:'wimhof', cat:'work', name:'Wim Hof Method', origin:'Wim Hof — "The Iceman"',
+    rhythm:'30 power breaths + holds',
+    desc:'Controlled hyperventilation followed by breath retention developed by Dutch extreme athlete Wim Hof. Affects the autonomic nervous system, inflammatory response and cold tolerance. Do NOT practice near water.',
+    type:'wimhof', ctrls:['wh'],
+    warn:'⚠ Do NOT practice in water, while driving, or unsupervised. Dizziness and tingling are normal. Fainting is possible — sit or lie down.' },
+
+  { id:'tummo', cat:'work', name:'Tummo Breathing', origin:'Tibetan Buddhist tradition',
+    rhythm:'Power breaths + breath retention',
+    desc:'Ancient Tibetan "inner fire" meditation. Uses forceful diaphragmatic breathing with holds and visualisation to generate heat, heightened awareness, and deep meditative states. Structurally similar to Wim Hof.',
+    type:'wimhof', ctrls:['wh'],
+    warn:'⚠ Do NOT practice in water or while driving. Sit or lie down in a safe, quiet space.' },
+
+  { id:'altnostril', cat:'work', name:'Alternate Nostril', origin:'Nadi Shodhana Pranayama',
+    rhythm:'L4 · H4 · R4 · H4',
+    desc:'Inhale left nostril, hold, exhale right, hold — alternating each cycle. Balances the two hemispheres, reduces anxiety, and supports clear mental focus.',
+    type:'timed', phases:[{l:'Left in',d:4,s:1.0},{l:'Hold',d:4,s:1.0},{l:'Right out',d:4,s:.55},{l:'Hold',d:4,s:.55}], ctrls:['dur'] },
+
+  // HYPE UP
+  { id:'kapalabhati', cat:'hype', name:'Kapalabhati', origin:'Hatha Yoga · "Skull Shining Breath"',
+    rhythm:'Rapid forceful exhales · passive inhales',
+    desc:'Forceful rhythmic exhales pump oxygenated blood to the brain, energise the body, and clear the respiratory tract. Ancient hatha yoga purification practice. 3 rounds of 30.',
+    type:'kap', passive:true, ctrls:['kap'],
+    warn:'⚠ Not during pregnancy or with heart disease/high BP. Practise on an empty stomach.' },
+
+  { id:'bhastrika', cat:'hype', name:'Bhastrika', origin:'Pranayama · "Bellows Breath"',
+    rhythm:'Forceful in AND out',
+    desc:'Rapid, forceful inhales AND exhales — both active. More intense than Kapalabhati. Stokes inner fire, raises energy fast, and sharpens focus before physical activity.',
+    type:'kap', passive:false, ctrls:['kap'],
+    warn:'⚠ Not during pregnancy or with heart conditions. Start very slowly and stop if dizzy.' },
+
+  { id:'breathfire', cat:'hype', name:'Breath of Fire', origin:'Kundalini Yoga · Yogi Bhajan',
+    rhythm:'Fast equal nasal in/out',
+    desc:'Rapid continuous nasal breathing at equal inhale/exhale. Activates the solar plexus, strengthens the nervous system, builds prana. Core practice in Kundalini kriyas.',
+    type:'kap', passive:false, ctrls:['kap'],
+    warn:'⚠ Not during pregnancy. Begin with 30-second sessions and build gradually over weeks.' },
+];
+
+// ──────────────────────────────────────────────────
+// BUILD HOME CARDS
+// ──────────────────────────────────────────────────
+function buildHome(){
+  const grids={wind:'g-wind',work:'g-work',hype:'g-hype'};
+  TECHS.forEach(t=>{
+    const g=document.getElementById(grids[t.cat]);
+    const el=document.createElement('div');
+    el.className='tech-card '+t.cat;
+    el.innerHTML=`<div class="card-name">${t.name}</div>
+<div class="card-origin">${t.origin}</div>
+<div class="card-rhythm">${t.rhythm}</div>
+<div class="card-desc">${t.desc}</div>`;
+    let touchStartY = 0;
+    let touchMoved = false;
+    el.addEventListener('touchstart', function(e){
+      touchStartY = e.touches[0].clientY;
+      touchMoved = false;
+    }, {passive: true});
+    el.addEventListener('touchmove', function(e){
+      if(Math.abs(e.touches[0].clientY - touchStartY) > 8) touchMoved = true;
+    }, {passive: true});
+    el.addEventListener('touchend', function(e){
+      if(!touchMoved){ e.preventDefault(); open(t.id); }
+    }, {passive: false});
+    el.addEventListener('click', function(){ open(t.id); });
+    g.appendChild(el);
+  });
+}
+
+// ──────────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────────
+let T=null; // current technique
+
+function open(id){
+  T=TECHS.find(x=>x.id===id);
+  document.getElementById('pt-name').textContent=T.name;
+  document.getElementById('pt-origin').textContent=T.origin;
+  // button colour
+  const btn=document.getElementById('startBtn');
+  btn.className='start-btn '+T.cat;
+  // controls
+  document.getElementById('rowDur').style.display=T.type==='wimhof'||T.type==='kap'?'none':'flex';
+  document.getElementById('rowRatio').style.display=T.ctrls.includes('ratio')?'flex':'none';
+  document.getElementById('rowKap').style.display=T.ctrls.includes('kap')?'flex':'none';
+  document.getElementById('rowWH').style.display=T.ctrls.includes('wh')?'flex':'none';
+  const w=document.getElementById('warnTxt');
+  if(T.warn){w.textContent=T.warn;w.style.display='block'}else w.style.display='none';
+  // circle colour
+  setCircleColor(T.cat);
+  // start ambient background scene preview
+  BG.start(T.cat);
+  // reset
+  resetPlayer();
+  buildCueStrip();
+  buildRoundDots();
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('player').classList.remove('hidden');
+}
+
+function goHome(){
+  if(running)endSession();
+  BG.stop();
+  AMB.stop();
+  document.getElementById('player').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+  T=null;
+}
+
+const CAT_RGB={wind:'79,168,199',work:'160,126,203',hype:'203,126,126'};
+function setCircleColor(cat){
+  const c=CAT_RGB[cat];
+  const bc=document.getElementById('bc');
+  bc.style.background=`radial-gradient(ellipse at 40% 38%,rgba(${c},.18) 0%,rgba(${c},.10) 40%,transparent 70%)`;
+  bc.style.borderColor=`rgba(${c},.35)`;
+  bc.style.boxShadow=`0 0 40px rgba(${c},.1),inset 0 0 60px rgba(${c},.06)`;
+  document.getElementById('prog').style.stroke=`rgba(${c},1)`;
+  // phase label
+  document.getElementById('pl').style.color=`rgba(${c},.85)`;
+}
+
+// ──────────────────────────────────────────────────
+// PLAYER STATE
+// ──────────────────────────────────────────────────
+let running=false,phTimer=null,sesTimer=null;
+let phaseIdx=0,cycCnt=0,sesSec=0,maxSec=300;
+let whRound=0,whState='',whBreath=0;
+let kapRound=0,kapCount=0;
+
+function resetPlayer(){
+  clearTimeout(phTimer);clearInterval(sesTimer);clearTimeout(kapTick);
+  running=false;phaseIdx=0;cycCnt=0;sesSec=0;whRound=0;whState='';whBreath=0;kapRound=0;kapCount=0;
+  document.getElementById('startTxt').textContent='Begin';
+  document.getElementById('pl').textContent='—';
+  document.getElementById('cd').textContent='';
+  document.getElementById('sd').textContent='';
+  document.getElementById('sCyc').textContent='0';
+  document.getElementById('sTime').textContent='0:00';
+  document.getElementById('prog').style.transition='none';
+  document.getElementById('prog').style.strokeDashoffset='760';
+  const bc=document.getElementById('bc');
+  bc.style.transition='transform 1.5s ease';
+  bc.style.transform='scale(.6)';
+  bc.classList.remove('pulsing');
+  document.getElementById('tapBtn').style.display='none';
+}
+
+function buildCueStrip(){
+  const s=document.getElementById('cueStrip');
+  s.innerHTML='';
+  const phases=getPhases();
+  const n=T.type==='wimhof'?0:T.type==='kap'?3:phases.length;
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.className='cue-seg';d.id='cs'+i;
+    if(T.type==='kap'){d.style.minWidth='18px';d.style.flex='0 0 18px';}
+    s.appendChild(d);
+  }
+}
+
+function buildRoundDots(){
+  const r=document.getElementById('roundTrack');
+  r.innerHTML='';
+  if(T.type!=='wimhof')return;
+  const n=parseInt(document.getElementById('whRnd').value)||3;
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.className='round-dot';d.id='rd'+i;
+    r.appendChild(d);
+  }
+}
+
+function getPhases(){
+  if(!T)return[];
+  if(T.getPhases)return T.getPhases();
+  return T.phases||[];
+}
+
+// ──────────────────────────────────────────────────
+// SESSION CONTROL
+// ──────────────────────────────────────────────────
+function toggleSession(){
+  if(!running)startSes();else endSession();
+}
+
+function startSes(){
+  if(!T)return;
+  running=true;
+  sesSec=0;
+  const dur=parseInt(document.getElementById('durSel').value)||0;
+  maxSec=dur===0?Infinity:dur*60;
+  document.getElementById('startTxt').textContent='End';
+  buildRoundDots();
+  AMB.start(T.cat);
+
+  sesTimer=setInterval(()=>{
+    sesSec++;
+    const m=Math.floor(sesSec/60),s=sesSec%60;
+    document.getElementById('sTime').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    if(sesSec>=maxSec)endSession();
+  },1000);
+
+  if(T.type==='timed')runTimed();
+  else if(T.type==='wimhof')runWH();
+  else if(T.type==='kap')runKap();
+}
+
+function endSession(){
+  clearTimeout(phTimer);clearInterval(sesTimer);clearTimeout(kapTick);
+  // Save to history if meaningful (≥60s)
+  if(running && T && sesSec >= 60) saveSession(T, sesSec, cycCnt);
+  running=false;
+  AMB.stop();
+  document.getElementById('startTxt').textContent='Begin';
+  document.getElementById('pl').textContent='—';
+  document.getElementById('cd').textContent='';
+  document.getElementById('sd').textContent='';
+  document.getElementById('bc').style.transition='transform 1.5s ease';
+  document.getElementById('bc').style.transform='scale(.6)';
+  document.getElementById('bc').classList.remove('pulsing');
+  document.getElementById('prog').style.transition='none';
+  document.getElementById('prog').style.strokeDashoffset='760';
+  document.querySelectorAll('.cue-seg').forEach(s=>s.classList.remove('active','done'));
+  document.querySelectorAll('.round-dot').forEach(d=>d.classList.remove('active','done'));
+  document.getElementById('tapBtn').style.display='none';
+}
+
+// ──────────────────────────────────────────────────
+// TIMED PHASES
+// ──────────────────────────────────────────────────
+function runTimed(){
+  if(!running)return;
+  const phases=getPhases();
+  const ph=phases[phaseIdx];
+  const dur=ph.d;
+
+  playAndFeel(ph.l);
+  document.getElementById('pl').textContent=ph.l;
+  document.querySelectorAll('.cue-seg').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i<phaseIdx)s.classList.add('done');
+    if(i===phaseIdx)s.classList.add('active');
+    s.style.background=i===phaseIdx?`rgb(${CAT_RGB[T.cat]})`:'';
+  });
+
+  const bc=document.getElementById('bc');
+  bc.style.transition=`transform ${dur}s cubic-bezier(.4,0,.2,1)`;
+  bc.style.transform=`scale(${ph.s})`;
+  bc.classList.toggle('pulsing',ph.l.startsWith('Hold')&&ph.s===1.0);
+
+  const p=document.getElementById('prog');
+  p.style.transition='none';p.style.strokeDashoffset='760';
+  void p.offsetWidth;
+  p.style.transition=`stroke-dashoffset ${dur}s linear`;
+  p.style.strokeDashoffset='0';
+
+  let rem=dur;
+  document.getElementById('cd').textContent=rem;
+  clearTimeout(phTimer);
+  function tick2(){
+    rem--;
+    document.getElementById('cd').textContent=rem>0?rem:'';
+    if(rem>0 && rem<=3){ tick(); haptic('tick'); }
+    if(rem<=0){nextPhase();}
+    else phTimer=setTimeout(tick2,1000);
+  }
+  phTimer=setTimeout(tick2,1000);
+}
+
+function nextPhase(){
+  if(!running)return;
+  const phases=getPhases();
+  phaseIdx++;
+  if(phaseIdx>=phases.length){phaseIdx=0;cycCnt++;document.getElementById('sCyc').textContent=cycCnt;}
+  runTimed();
+}
+
+// ──────────────────────────────────────────────────
+// WIM HOF
+// ──────────────────────────────────────────────────
+function runWH(){
+  whRound=0;whBreath=0;whState='power';
+  document.getElementById('tapBtn').style.display='block';
+  document.getElementById('rd0')&&document.getElementById('rd0').classList.add('active');
+  startPowerBreaths();
+}
+
+function startPowerBreaths(){
+  if(!running)return;
+  whState='power';whBreath=0;
+  document.getElementById('sd').textContent=`Round ${whRound+1} — 30 Power Breaths`;
+  let ph='in';
+  const half=500;
+  function pump(){
+    if(!running||whState!=='power')return;
+    if(ph==='in'){
+      playAndFeel('Inhale');
+      document.getElementById('pl').textContent='Inhale';
+      const bc=document.getElementById('bc');
+      bc.style.transition=`transform .5s ease`;bc.style.transform='scale(1.0)';
+      animBar(.5);
+    }else{
+      playAndFeel('Exhale');
+      document.getElementById('pl').textContent='Exhale';
+      document.getElementById('bc').style.transition='transform .5s ease';
+      document.getElementById('bc').style.transform='scale(.6)';
+      whBreath++;
+      document.getElementById('cd').textContent=whBreath;
+      document.getElementById('sCyc').textContent=whBreath;
+    }
+    ph=ph==='in'?'out':'in';
+    if(whBreath>=30&&ph==='in'){whState='done-power';setTimeout(startExhaleHold,300);return;}
+    phTimer=setTimeout(pump,half);
+  }
+  pump();
+}
+
+function startExhaleHold(){
+  if(!running)return;
+  clearTimeout(phTimer);
+  whState='exhale-hold';
+  playAndFeel('HoldLow');
+  document.getElementById('pl').textContent='Hold';
+  document.getElementById('sd').textContent='Exhale & hold — relax completely';
+  document.getElementById('cd').textContent='0';
+  document.getElementById('bc').style.transition='transform 1.5s ease';
+  document.getElementById('bc').style.transform='scale(.55)';
+  document.getElementById('bc').classList.remove('pulsing');
+  let e=0;
+  phTimer=setInterval(()=>{e++;document.getElementById('cd').textContent=e;},1000);
+}
+
+function startInhaleHold(){
+  if(!running)return;
+  clearInterval(phTimer);
+  whState='inhale-hold';
+  playAndFeel('Hold');
+  document.getElementById('pl').textContent='Full Inhale';
+  document.getElementById('sd').textContent='Breathe in fully — hold 15 s';
+  document.getElementById('bc').style.transition='transform 1s ease';
+  document.getElementById('bc').style.transform='scale(1.0)';
+  document.getElementById('bc').classList.add('pulsing');
+  let rem=15;
+  document.getElementById('cd').textContent=rem;
+  phTimer=setInterval(()=>{
+    rem--;
+    document.getElementById('cd').textContent=rem>0?rem:'';
+    if(rem>0 && rem<=3){ tick(); haptic('tick'); }
+    if(rem<=0){clearInterval(phTimer);advanceRound();}
+  },1000);
+}
+
+function whAdvance(){
+  if(!running)return;
+  if(whState==='exhale-hold')startInhaleHold();
+}
+
+function advanceRound(){
+  const tot=parseInt(document.getElementById('whRnd').value)||3;
+  const d=document.getElementById('rd'+whRound);
+  if(d){d.classList.remove('active');d.classList.add('done');}
+  whRound++;cycCnt++;
+  document.getElementById('sCyc').textContent=cycCnt;
+  document.getElementById('bc').classList.remove('pulsing');
+
+  if(whRound>=tot){
+    document.getElementById('pl').textContent='Complete';
+    document.getElementById('sd').textContent='Meditate — breathe freely';
+    document.getElementById('cd').textContent='';
+    running=false;
+    document.getElementById('startTxt').textContent='Begin';
+    document.getElementById('tapBtn').style.display='none';
+    return;
+  }
+  const nd=document.getElementById('rd'+whRound);
+  if(nd)nd.classList.add('active');
+  document.getElementById('pl').textContent='Rest';
+  document.getElementById('sd').textContent='Breathe normally a few moments…';
+  document.getElementById('cd').textContent='';
+  document.getElementById('bc').style.transition='transform 2s ease';
+  document.getElementById('bc').style.transform='scale(.65)';
+  whBreath=0;
+  phTimer=setTimeout(()=>{if(running)startPowerBreaths();},4500);
+}
+
+// ──────────────────────────────────────────────────
+// KAPALABHATI / BHASTRIKA / BREATH OF FIRE
+// ──────────────────────────────────────────────────
+const KAP_PACE=[900,550,340];
+let kapTick=null;
+
+function runKap(){
+  kapRound=0;kapCount=0;
+  doKapRound();
+}
+
+function doKapRound(){
+  if(!running)return;
+  kapCount=0;
+  const pace=KAP_PACE[parseInt(document.getElementById('kapSl').value)-1];
+  const N=30;
+  const passive=T.passive!==false&&T.passive;
+
+  const seg=document.getElementById('cs'+kapRound);
+  if(seg){seg.classList.remove('done');seg.classList.add('active');seg.style.background=`rgb(${CAT_RGB[T.cat]})`;}
+
+  document.getElementById('sd').textContent=`Round ${kapRound+1} of 3 — ${N} breaths`;
+
+  let ph='out';
+  function pump(){
+    if(!running)return;
+    if(ph==='out'){
+      playAndFeel('Exhale');
+      document.getElementById('pl').textContent='Exhale';
+      document.getElementById('bc').style.transition=`transform ${pace/2/1000}s ease`;
+      document.getElementById('bc').style.transform='scale(.57)';
+      kapCount++;
+      document.getElementById('cd').textContent=kapCount;
+      animBar(pace/2/1000);
+    }else{
+      document.getElementById('pl').textContent=passive?'(inhale)':'Inhale';
+      document.getElementById('bc').style.transition=`transform ${pace/2/1000}s ease`;
+      document.getElementById('bc').style.transform=`scale(${passive?.72:.82})`;
+    }
+    ph=ph==='out'?'in':'out';
+    if(kapCount>=N&&ph==='out'){
+      const s=document.getElementById('cs'+kapRound);
+      if(s){s.classList.remove('active');s.classList.add('done');s.style.background='';}
+      cycCnt++;document.getElementById('sCyc').textContent=cycCnt;
+      kapRound++;
+      if(kapRound>=3){
+        document.getElementById('pl').textContent='Complete';
+        document.getElementById('sd').textContent='Session done';
+        document.getElementById('cd').textContent='';
+        document.getElementById('bc').style.transition='transform 1.5s ease';
+        document.getElementById('bc').style.transform='scale(.65)';
+        haptic('complete');
+        running=false;document.getElementById('startTxt').textContent='Begin';
+        return;
+      }
+      document.getElementById('pl').textContent='Rest';
+      document.getElementById('sd').textContent='Breathe normally…';
+      document.getElementById('cd').textContent='';
+      kapTick=setTimeout(()=>{if(running)doKapRound();},4000);
+      return;
+    }
+    kapTick=setTimeout(pump,pace/2);
+  }
+  pump();
+}
+
+function animBar(d){
+  const p=document.getElementById('prog');
+  p.style.transition='none';p.style.strokeDashoffset='760';
+  void p.offsetWidth;
+  p.style.transition=`stroke-dashoffset ${d}s linear`;
+  p.style.strokeDashoffset='0';
+}
+
+// ──────────────────────────────────────────────────
+// CUSTOM TECHNIQUE BUILDER
+// ──────────────────────────────────────────────────
+const PHASE_LABELS = ['Inhale','Hold','Exhale','Hold (empty)','Inhale+','Custom'];
+
+function openBuilder(){
+  // Reset form
+  document.getElementById('bName').value = '';
+  document.getElementById('bDesc').value = '';
+  document.getElementById('bCat').value = 'work';
+  document.getElementById('bError').textContent = '';
+  document.getElementById('phaseList').innerHTML = '';
+  // Add 3 default phases
+  addPhaseRow('Inhale', 4);
+  addPhaseRow('Hold', 4);
+  addPhaseRow('Exhale', 4);
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('builder').classList.remove('hidden');
+}
+
+function closeBuilder(){
+  document.getElementById('builder').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function addPhaseRow(label='Inhale', dur=4){
+  const list = document.getElementById('phaseList');
+  if(list.children.length >= 6){
+    document.getElementById('addPhaseBtn').style.opacity = '.3';
+    return;
+  }
+  const row = document.createElement('div');
+  row.className = 'phase-row';
+  const opts = PHASE_LABELS.map(l =>
+    `<option value="${l}" ${l===label?'selected':''}>${l}</option>`
+  ).join('');
+  row.innerHTML = `
+    <select class="phase-lbl-sel">${opts}</select>
+    <input class="dur-input" type="number" min="1" max="60" value="${dur}">
+    <button class="phase-del" onclick="removePhaseRow(this)" title="Remove">×</button>
+  `;
+  list.appendChild(row);
+  document.getElementById('addPhaseBtn').style.opacity = list.children.length >= 6 ? '.3' : '1';
+}
+
+function removePhaseRow(btn){
+  btn.closest('.phase-row').remove();
+  document.getElementById('addPhaseBtn').style.opacity = '1';
+}
+
+function saveCustom(){
+  const name = document.getElementById('bName').value.trim();
+  const cat  = document.getElementById('bCat').value;
+  const desc = document.getElementById('bDesc').value.trim();
+  const rows = document.querySelectorAll('#phaseList .phase-row');
+  const err  = document.getElementById('bError');
+
+  if(!name){ err.textContent = 'Please enter a name.'; return; }
+  if(rows.length < 2){ err.textContent = 'Add at least 2 phases.'; return; }
+
+  const phases = Array.from(rows).map(r => {
+    const lbl = r.querySelector('.phase-lbl-sel').value;
+    const d   = Math.max(1, Math.min(60, parseInt(r.querySelector('.dur-input').value)||4));
+    // circle scale: inhale/hold-full = 1.0, exhale/hold-empty = 0.55
+    const isExpand = lbl==='Inhale'||lbl==='Inhale+'||lbl==='Hold';
+    return { l: lbl, d, s: isExpand ? 1.0 : 0.55 };
+  });
+
+  const totalSec = phases.reduce((a,p)=>a+p.d, 0);
+  const rhythmParts = phases.map(p=>`${p.l[0]}${p.d}`);
+  const tech = {
+    id: 'custom_' + Date.now(),
+    cat, name,
+    origin: 'Custom',
+    rhythm: rhythmParts.join(' · '),
+    desc: desc || `${totalSec}s cycle · ${phases.length} phases`,
+    type: 'timed',
+    phases,
+    ctrls: ['dur'],
+    custom: true
+  };
+
+  // Save to localStorage
+  const saved = loadCustomTechs();
+  saved.push(tech);
+  localStorage.setItem('bw_custom', JSON.stringify(saved));
+
+  err.textContent = '';
+  closeBuilder();
+  renderCustomCards();
+  haptic('complete');
+}
+
+function loadCustomTechs(){
+  try { return JSON.parse(localStorage.getItem('bw_custom') || '[]'); }
+  catch(e){ return []; }
+}
+
+function deleteCustom(id, e){
+  e.stopPropagation();
+  const saved = loadCustomTechs().filter(t => t.id !== id);
+  localStorage.setItem('bw_custom', JSON.stringify(saved));
+  renderCustomCards();
+}
+
+function renderCustomCards(){
+  const grid = document.getElementById('g-custom');
+  const section = document.getElementById('custom-section');
+  grid.innerHTML = '';
+  const customs = loadCustomTechs();
+  if(customs.length === 0){ section.style.display='none'; return; }
+  section.style.display = 'block';
+  customs.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'tech-card ' + t.cat;
+    el.innerHTML = `
+      <div class="custom-badge">Custom</div>
+      <div class="card-name">${t.name}</div>
+      <div class="card-origin">${t.origin}</div>
+      <div class="card-rhythm">${t.rhythm}</div>
+      <div class="card-desc">${t.desc}</div>
+      <button class="delete-card-btn" onclick="deleteCustom('${t.id}',event)" title="Delete">🗑</button>
+    `;
+    let touchStartY=0, touchMoved=false;
+    el.addEventListener('touchstart', e=>{ touchStartY=e.touches[0].clientY; touchMoved=false; },{passive:true});
+    el.addEventListener('touchmove',  e=>{ if(Math.abs(e.touches[0].clientY-touchStartY)>8)touchMoved=true; },{passive:true});
+    el.addEventListener('touchend',   e=>{ if(!touchMoved){e.preventDefault();openCustom(t);} },{passive:false});
+    el.addEventListener('click', ()=>openCustom(t));
+    grid.appendChild(el);
+  });
+}
+
+function openCustom(t){
+  // Register temporarily in TECHS if not already there
+  const existing = TECHS.find(x=>x.id===t.id);
+  if(!existing) TECHS.push(t);
+  open(t.id);
+}
+
+// ──────────────────────────────────────────────────
+// SESSION HISTORY
+// ──────────────────────────────────────────────────
+function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem('bw_history')||'{"sessions":[],"totalSec":0}'); }
+  catch(e){ return {sessions:[],totalSec:0}; }
+}
+
+function saveSession(tech, durationSec, cycles){
+  const h = loadHistory();
+  const entry = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    techId: tech.id,
+    techName: tech.name,
+    cat: tech.cat,
+    durationSec,
+    cycles
+  };
+  h.sessions.unshift(entry);
+  if(h.sessions.length > 60) h.sessions = h.sessions.slice(0, 60);
+  h.totalSec = (h.totalSec||0) + durationSec;
+  localStorage.setItem('bw_history', JSON.stringify(h));
+  // Update home header streak badge if visible
+  updateHomeStreak();
+}
+
+function getStreaks(sessions){
+  if(!sessions.length) return {current:0, best:0};
+  // Build set of unique practice days (YYYY-MM-DD)
+  const days = [...new Set(sessions.map(s => s.date.slice(0,10)))].sort().reverse();
+  let current = 0, best = 0, streak = 1;
+  const today = new Date().toISOString().slice(0,10);
+  const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+  // Current streak
+  if(days[0] === today || days[0] === yesterday){
+    current = 1;
+    for(let i=1;i<days.length;i++){
+      const prev = new Date(days[i-1]), cur = new Date(days[i]);
+      const diff = (prev-cur)/86400000;
+      if(diff === 1) current++;
+      else break;
+    }
+  }
+  // Best streak
+  streak = 1;
+  for(let i=1;i<days.length;i++){
+    const prev = new Date(days[i-1]), cur = new Date(days[i]);
+    const diff = (prev-cur)/86400000;
+    if(diff === 1){ streak++; best = Math.max(best, streak); }
+    else streak = 1;
+  }
+  best = Math.max(best, current, days.length > 0 ? 1 : 0);
+  return {current, best};
+}
+
+function updateHomeStreak(){
+  // Show a small streak indicator in the home header subtitle
+  const h = loadHistory();
+  const {current} = getStreaks(h.sessions);
+  const p = document.querySelector('.home-hdr p');
+  if(p){
+    if(current >= 2) p.textContent = `🔥 ${current} day streak`;
+    else if(h.sessions.length > 0){
+      const totalMin = Math.round((h.totalSec||0)/60);
+      p.textContent = `${totalMin} min practiced`;
+    } else {
+      p.textContent = 'Select a technique to begin';
+    }
+  }
+}
+
+function openHistory(){
+  renderHistory();
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('history').classList.remove('hidden');
+}
+
+function closeHistory(){
+  document.getElementById('history').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function renderHistory(){
+  const h = loadHistory();
+  const sessions = h.sessions || [];
+
+  if(sessions.length === 0){
+    document.getElementById('histEmpty').style.display = 'block';
+    document.getElementById('histContent').style.display = 'none';
+    return;
+  }
+  document.getElementById('histEmpty').style.display = 'none';
+  document.getElementById('histContent').style.display = 'block';
+
+  // ── Headline stats ──
+  const totalMin = Math.round((h.totalSec||0)/60);
+  const avgMin   = Math.round(sessions.reduce((a,s)=>a+s.durationSec,0)/sessions.length/60);
+  const now = new Date();
+  const weekAgo = new Date(now - 7*86400000);
+  const thisWeek = sessions.filter(s => new Date(s.date) >= weekAgo).length;
+
+  document.getElementById('hTotalMin').textContent = totalMin >= 60
+    ? `${Math.floor(totalMin/60)}h${totalMin%60 ? totalMin%60+'m' : ''}` : totalMin;
+  document.getElementById('hSessions').textContent = sessions.length;
+  document.getElementById('hThisWeek').textContent = thisWeek;
+  document.getElementById('hAvgMin').textContent   = avgMin || '<1';
+
+  // ── Streaks ──
+  const {current, best} = getStreaks(sessions);
+  const sb = document.getElementById('streakBadge');
+  sb.classList.toggle('active', current >= 1);
+  document.getElementById('streakTxt').textContent    = `${current} day streak`;
+  document.getElementById('bestStreakTxt').textContent = `Best: ${best} day${best!==1?'s':''}`;
+
+  // ── Weekly bar chart ──
+  const bars = document.getElementById('weekBars');
+  bars.innerHTML = '';
+  const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  for(let i=6;i>=0;i--){
+    const d = new Date(now - i*86400000);
+    const ds = d.toISOString().slice(0,10);
+    const daySessions = sessions.filter(s=>s.date.slice(0,10)===ds);
+    const dayMin = Math.round(daySessions.reduce((a,s)=>a+s.durationSec,0)/60);
+    const cats = [...new Set(daySessions.map(s=>s.cat))];
+    const colCat = cats.length===1 ? cats[0] : cats.length>1 ? 'mixed' : '';
+    const col = document.createElement('div');
+    col.className = 'wbar-col';
+    const bar = document.createElement('div');
+    bar.className = 'wbar' + (dayMin>0 ? ` has-data ${colCat}`:'') + (i===0?' today':'');
+    bar.style.height = dayMin > 0 ? `${Math.min(48, 8 + dayMin*3)}px` : '4px';
+    if(dayMin > 0) bar.title = `${dayMin} min`;
+    const lbl = document.createElement('div');
+    lbl.className = 'wbar-lbl';
+    lbl.textContent = i===0 ? 'Today' : DAY_LABELS[d.getDay()];
+    col.appendChild(bar);
+    col.appendChild(lbl);
+    bars.appendChild(col);
+  }
+
+  // ── Category breakdown ──
+  const catEl = document.getElementById('catBars');
+  catEl.innerHTML = '';
+  const catTotals = {wind:0, work:0, hype:0};
+  sessions.forEach(s=>{ if(catTotals[s.cat]!==undefined) catTotals[s.cat]+=s.durationSec; });
+  const maxCat = Math.max(...Object.values(catTotals), 1);
+  const catNames = {wind:'Wind Down', work:'Breathwork', hype:'Hype Up'};
+  ['wind','work','hype'].forEach(cat=>{
+    const min = Math.round(catTotals[cat]/60);
+    const row = document.createElement('div');
+    row.className = 'cbar-row';
+    row.innerHTML = `
+      <div class="cbar-name">${catNames[cat]}</div>
+      <div class="cbar-track"><div class="cbar-fill ${cat}" style="width:${Math.round(catTotals[cat]/maxCat*100)}%"></div></div>
+      <div class="cbar-val">${min} min</div>
+    `;
+    catEl.appendChild(row);
+  });
+
+  // ── Session log ──
+  const log = document.getElementById('logList');
+  log.innerHTML = '';
+  sessions.slice(0, 30).forEach(s=>{
+    const d = new Date(s.date);
+    const dateStr = d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    const timeStr = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const min = Math.ceil(s.durationSec/60);
+    const item = document.createElement('div');
+    item.className = 'log-item';
+    item.innerHTML = `
+      <div class="log-dot ${s.cat}"></div>
+      <div class="log-info">
+        <div class="log-name">${s.techName}</div>
+        <div class="log-date">${dateStr} · ${timeStr}</div>
+      </div>
+      <div class="log-dur">${min}m</div>
+    `;
+    log.appendChild(item);
+  });
+}
+
+// ──────────────────────────────────────────────────
+buildHome();
+renderCustomCards();
+updateHomeStreak();
+</script>
+</body>
+</html>
