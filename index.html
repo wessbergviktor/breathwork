@@ -22,7 +22,7 @@
   --bg:#080c10;--surface:#0f1520;--card:#111c28;--ring:#1e2d3d;
   --glow:#4fa8c7;--glow-dim:rgba(79,168,199,.12);
   --text:#c8dde8;--text-dim:#4e6a7a;--text-muted:#2a3f50;--accent:#7ecbdf;--phase-color:#a8d8e8;
-  --wind:79,168,199;--work:160,126,203;--hype:203,126,126;
+  --wind:79,168,199;--work:160,126,203;--hype:203,126,126;--cold:186,222,238;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Jost',sans-serif;font-weight:300;overflow:hidden}
 /* safe area for notch / Dynamic Island / home indicator */
@@ -46,17 +46,20 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .tech-card.wind::before{background:rgb(var(--wind))}
 .tech-card.work::before{background:rgb(var(--work))}
 .tech-card.hype::before{background:rgb(var(--hype))}
-.tech-card:hover{}
+.tech-card.cold::before{background:rgb(var(--cold))}
 .tech-card.wind:hover{border-color:rgba(var(--wind),.5);background:rgba(var(--wind),.04)}
 .tech-card.work:hover{border-color:rgba(var(--work),.5);background:rgba(var(--work),.04)}
 .tech-card.hype:hover{border-color:rgba(var(--hype),.5);background:rgba(var(--hype),.04)}
+.tech-card.cold:hover{border-color:rgba(var(--cold),.5);background:rgba(var(--cold),.04)}
 .card-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--text);letter-spacing:.04em;margin-bottom:3px}
 .card-origin{font-size:.57rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
 .card-rhythm{font-size:.7rem;letter-spacing:.08em;margin-bottom:7px;font-weight:400}
 .tech-card.wind .card-rhythm{color:rgba(var(--wind),1)}
 .tech-card.work .card-rhythm{color:rgba(var(--work),1)}
 .tech-card.hype .card-rhythm{color:rgba(var(--hype),1)}
+.tech-card.cold .card-rhythm{color:rgba(var(--cold),1)}
 .card-desc{font-size:.66rem;color:var(--text-dim);line-height:1.55}
+.card-flag{display:inline-block;margin-top:8px;font-size:.53rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(203,126,126,.75);border:1px solid rgba(203,126,126,.25);border-radius:2px;padding:2px 7px}
 
 /* PLAYER */
 #player{align-items:center;justify-content:space-between;padding-top:env(safe-area-inset-top);padding-bottom:max(24px,env(safe-area-inset-bottom))}
@@ -84,8 +87,11 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .prog-track{fill:none;stroke:var(--ring);stroke-width:1.5}
 .prog-bar{fill:none;stroke:var(--glow);stroke-width:1.5;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .5s}
 
+/* coaching cue under the circle */
+.coach-line{font-size:.62rem;letter-spacing:.1em;color:var(--text-dim);text-align:center;max-width:300px;line-height:1.5;margin-top:10px;min-height:1.6rem;padding:0 14px;transition:opacity .4s}
+
 /* strips */
-.cue-strip{display:flex;gap:3px;margin-top:10px}
+.cue-strip{display:flex;gap:3px;margin-top:10px;max-width:88vw;flex-wrap:nowrap}
 .cue-seg{height:3px;border-radius:2px;background:var(--ring);transition:background .3s,transform .3s;min-width:30px;flex:1}
 .cue-seg.active{transform:scaleY(2)}
 .cue-seg.done{opacity:.4}
@@ -110,6 +116,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .start-btn.work::before{background:rgb(var(--work))}
 .start-btn.hype{border-color:rgba(var(--hype),.8);color:rgb(var(--hype))}
 .start-btn.hype::before{background:rgb(var(--hype))}
+.start-btn.cold{border-color:rgba(var(--cold),.8);color:rgb(var(--cold))}
+.start-btn.cold::before{background:rgb(var(--cold))}
 .ctrl-row{display:flex;align-items:center;gap:9px;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
 .ctrl-row select,.ctrl-row input[type=range]{background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.58rem;letter-spacing:.1em;padding:4px 7px;cursor:pointer;border-radius:2px;outline:none}
 .ctrl-row select option{background:#0d1620}
@@ -133,9 +141,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #player>.p-back,#player>.snd-btn,#player>.circ-area,#player>.ctrl{position:relative;z-index:2}
 
 /* home action row */
-.home-actions{display:flex;gap:10px;padding:0 28px 4px;flex-shrink:0}
+.home-actions{display:flex;gap:10px;padding:0 28px 4px;flex-shrink:0;flex-wrap:wrap}
 .home-action-btn{background:transparent;border:1px solid var(--ring);color:var(--text-dim);font-family:'Jost',sans-serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;padding:8px 16px;cursor:pointer;border-radius:2px;transition:all .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .home-action-btn:hover,.home-action-btn:active{border-color:var(--glow);color:var(--accent)}
+.home-action-btn.primary{border-color:rgba(79,168,199,.45);color:var(--accent)}
 
 /* custom card badge */
 .custom-badge{position:absolute;top:10px;right:12px;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);background:var(--ring);padding:2px 7px;border-radius:10px}
@@ -183,6 +192,53 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .cat-section.wind::before{background:radial-gradient(ellipse at 50% 0%,rgb(79,168,199),transparent 70%)}
 .cat-section.work::before{background:radial-gradient(ellipse at 50% 0%,rgb(160,126,203),transparent 70%)}
 .cat-section.hype::before{background:radial-gradient(ellipse at 50% 0%,rgb(203,126,126),transparent 70%)}
+.cat-section.cold::before{background:radial-gradient(ellipse at 50% 0%,rgb(186,222,238),transparent 70%)}
+
+/* ── PROTOCOL SCREEN ── */
+#protocol{overflow-y:auto;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.proto-hdr{padding:36px 40px 8px;flex-shrink:0;display:flex;align-items:center;gap:16px}
+.proto-hdr h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.3rem,3.5vw,2rem);letter-spacing:.28em;text-transform:uppercase}
+.proto-body{padding:0 28px 60px;display:flex;flex-direction:column;gap:22px}
+.clock-strip{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:4px;border-bottom:1px solid var(--ring)}
+.clock-time{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--accent);line-height:1}
+.clock-period{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-dim)}
+.clock-note{font-size:.63rem;color:var(--text-dim);line-height:1.55;flex-basis:100%;margin-top:6px}
+
+.goal-lbl{font-size:.54rem;letter-spacing:.32em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:10px}
+.goal-lbl::after{content:'';flex:1;height:1px;background:var(--ring)}
+.goal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.goal-btn{background:var(--card);border:1px solid var(--ring);border-radius:3px;padding:13px 12px;cursor:pointer;text-align:left;font-family:'Jost',sans-serif;font-weight:300;color:var(--text-dim);transition:all .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;position:relative;overflow:hidden}
+.goal-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--ring);transition:background .3s}
+.goal-btn .g-name{font-size:.72rem;letter-spacing:.1em;color:var(--text);display:block}
+.goal-btn .g-sub{font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-top:3px;display:block}
+.goal-btn.sel{border-color:rgba(79,168,199,.5);background:rgba(79,168,199,.05)}
+.goal-btn.sel::before{background:var(--glow)}
+.goal-btn.sel .g-sub{color:var(--text-dim)}
+
+.rec-block{display:flex;flex-direction:column;gap:10px}
+.rec-primary{background:var(--card);border:1px solid var(--ring);border-radius:3px;padding:18px 18px 16px;position:relative;overflow:hidden}
+.rec-primary::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.rec-primary.wind::before{background:rgb(var(--wind))}
+.rec-primary.work::before{background:rgb(var(--work))}
+.rec-primary.hype::before{background:rgb(var(--hype))}
+.rec-primary.cold::before{background:rgb(var(--cold))}
+.rec-eyebrow{font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+.rec-name{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;color:var(--text);letter-spacing:.03em}
+.rec-rhythm{font-size:.68rem;letter-spacing:.1em;color:var(--text-dim);margin-top:3px}
+.rec-why{font-size:.68rem;color:var(--text-dim);line-height:1.6;margin-top:10px}
+.rec-start{margin-top:14px;background:transparent;border:1.5px solid;font-family:'Jost',sans-serif;font-weight:300;font-size:.63rem;letter-spacing:.32em;text-transform:uppercase;padding:11px 30px;cursor:pointer;border-radius:2px;transition:all .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.rec-start.wind{border-color:rgba(var(--wind),.7);color:rgb(var(--wind))}
+.rec-start.work{border-color:rgba(var(--work),.7);color:rgb(var(--work))}
+.rec-start.hype{border-color:rgba(var(--hype),.7);color:rgb(var(--hype))}
+.rec-start.cold{border-color:rgba(var(--cold),.7);color:rgb(var(--cold))}
+.rec-alts{display:flex;flex-direction:column;gap:7px}
+.rec-alt{background:transparent;border:1px solid var(--ring);border-radius:3px;padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:border-color .3s}
+.rec-alt:active{border-color:var(--glow)}
+.rec-alt .a-name{font-size:.72rem;color:var(--text);letter-spacing:.04em}
+.rec-alt .a-why{font-size:.56rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.rec-alt .a-arrow{color:var(--text-muted);font-size:.75rem}
+.rec-flag{font-size:.62rem;letter-spacing:.04em;color:rgba(203,126,126,.72);line-height:1.6;padding:9px 12px;border:1px solid rgba(203,126,126,.22);border-radius:2px}
+.safety-note{font-size:.6rem;color:var(--text-muted);line-height:1.7;border-top:1px solid var(--ring);padding-top:16px}
 
 /* ── HISTORY SCREEN ── */
 #history{overflow-y:auto;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
@@ -203,6 +259,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .wbar.has-data.wind{background:rgba(79,168,199,.55)}
 .wbar.has-data.work{background:rgba(160,126,203,.55)}
 .wbar.has-data.hype{background:rgba(203,126,126,.55)}
+.wbar.has-data.cold{background:rgba(186,222,238,.55)}
 .wbar.has-data.mixed{background:rgba(126,203,223,.5)}
 .wbar.today{box-shadow:0 0 8px rgba(79,168,199,.4)}
 .wbar-lbl{font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
@@ -216,6 +273,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .cbar-fill.wind{background:rgba(79,168,199,.7)}
 .cbar-fill.work{background:rgba(160,126,203,.7)}
 .cbar-fill.hype{background:rgba(203,126,126,.7)}
+.cbar-fill.cold{background:rgba(186,222,238,.7)}
 .cbar-val{font-size:.58rem;color:var(--text-dim);width:40px;text-align:right;flex-shrink:0}
 
 /* session log */
@@ -225,6 +283,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .log-dot.wind{background:rgb(79,168,199)}
 .log-dot.work{background:rgb(160,126,203)}
 .log-dot.hype{background:rgb(203,126,126)}
+.log-dot.cold{background:rgb(186,222,238)}
 .log-info{display:flex;flex-direction:column;gap:2px}
 .log-name{font-size:.72rem;color:var(--text);letter-spacing:.04em}
 .log-date{font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
@@ -248,6 +307,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .hist-stats{grid-template-columns:repeat(2,1fr)}
   .hist-hdr{padding:28px 20px 16px}
   .hist-body{padding:0 14px 60px}
+  .proto-hdr{padding:28px 20px 8px}
+  .proto-body{padding:0 14px 60px}
+  .cue-seg{min-width:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .screen,.tech-card,.breath-circle,.prog-bar{transition-duration:.01ms !important}
 }
 </style>
 </head>
@@ -260,6 +325,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <p>Select a technique to begin</p>
   </div>
   <div class="home-actions">
+    <button class="home-action-btn primary" onclick="openProtocol()">Today's protocol</button>
     <button class="home-action-btn" onclick="openBuilder()">+ Custom</button>
     <button class="home-action-btn" onclick="openHistory()">History</button>
   </div>
@@ -272,6 +338,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="cat-lbl">Breathwork</div>
       <div class="tech-grid" id="g-work"></div>
     </div>
+    <div class="cat-section cold">
+      <div class="cat-lbl">Cold Exposure</div>
+      <div class="tech-grid" id="g-cold"></div>
+    </div>
     <div class="cat-section hype">
       <div class="cat-lbl">Hype Up</div>
       <div class="tech-grid" id="g-hype"></div>
@@ -279,6 +349,37 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div id="custom-section" style="display:none">
       <div class="cat-lbl">My Techniques</div>
       <div class="tech-grid" id="g-custom"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROTOCOL -->
+<div class="screen hidden" id="protocol">
+  <div class="proto-hdr">
+    <button class="b-back" onclick="closeProtocol()">Back</button>
+    <h2>Protocol</h2>
+  </div>
+  <div class="proto-body">
+    <div class="clock-strip">
+      <div class="clock-time" id="pClock">--:--</div>
+      <div class="clock-period" id="pPeriod">—</div>
+      <div class="clock-note" id="pNote"></div>
+    </div>
+
+    <div>
+      <div class="goal-lbl" style="margin-bottom:10px">What are you after?</div>
+      <div class="goal-grid" id="goalGrid"></div>
+    </div>
+
+    <div class="rec-block" id="recBlock"></div>
+
+    <div class="safety-note">
+      Power-breathing techniques (Wim Hof, Tummo, Kapalabhati, Bhastrika, Breath of Fire) are
+      done seated or lying down, on land, away from water — never in a bath, pool, lake, sauna,
+      or while driving or standing. Low CO₂ removes the urge to breathe, so blackout can arrive
+      without warning. Skip breath holds and forceful breathing if you are pregnant, have heart
+      disease, arrhythmia, uncontrolled high blood pressure, epilepsy, or a history of fainting.
+      Never cold-plunge alone in open water.
     </div>
   </div>
 </div>
@@ -378,6 +479,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="sub-disp" id="sd"></div>
       </div>
     </div>
+    <div class="coach-line" id="coach"></div>
     <div class="cue-strip" id="cueStrip"></div>
     <div class="round-track" id="roundTrack"></div>
   </div>
@@ -393,6 +495,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="ctrl-row" id="rowDur">
       <span>Duration</span>
       <select id="durSel">
+        <option value="2">2 min</option>
         <option value="3">3 min</option>
         <option value="5" selected>5 min</option>
         <option value="10">10 min</option>
@@ -414,7 +517,16 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     </div>
     <div class="ctrl-row" id="rowWH" style="display:none">
       <span>Rounds</span>
-      <select id="whRnd"><option value="3" selected>3</option><option value="4">4</option></select>
+      <select id="whRnd"><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select>
+    </div>
+    <div class="ctrl-row" id="rowHold" style="display:none">
+      <span>Hold</span>
+      <select id="holdSel">
+        <option value="20">20 s</option>
+        <option value="30" selected>30 s</option>
+        <option value="40">40 s</option>
+        <option value="50">50 s</option>
+      </select>
     </div>
     <button class="tap-btn" id="tapBtn" onclick="whAdvance()">Next Phase →</button>
     <div class="warn-txt" id="warnTxt" style="display:none"></div>
@@ -437,6 +549,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <select class="b-select" id="bCat">
         <option value="wind">Wind Down</option>
         <option value="work" selected>Breathwork</option>
+        <option value="cold">Cold Exposure</option>
         <option value="hype">Hype Up</option>
       </select>
     </div>
@@ -598,8 +711,10 @@ const BG = (() => {
   }
 
   function resize(){
+    if(!canvas) return;
     canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
     canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+    ctx2d.setTransform(1,0,0,1,0,0);
     ctx2d.scale(window.devicePixelRatio, window.devicePixelRatio);
     buildParticles();
   }
@@ -632,6 +747,20 @@ const BG = (() => {
         type:'star', x:Math.random()*W, y:Math.random()*H*0.65,
         r:0.5+Math.random()*1.2, op:0.2+Math.random()*0.6, twinkle:Math.random()*Math.PI*2
       });
+    } else if(scene === 'cold'){
+      // Slow drifting ice crystals
+      for(let i=0;i<70;i++) particles.push({
+        type:'flake', x:Math.random()*W, y:Math.random()*H,
+        r:0.6+Math.random()*1.8, drift:(Math.random()-.5)*0.25,
+        speed:0.15+Math.random()*0.45, op:0.15+Math.random()*0.45,
+        sway:Math.random()*Math.PI*2
+      });
+      // Frost bloom patches
+      for(let i=0;i<6;i++) particles.push({
+        type:'frost', x:Math.random()*W, y:Math.random()*H,
+        r:70+Math.random()*130, dx:(Math.random()-.5)*0.08,
+        dy:(Math.random()-.5)*0.06, op:0.02+Math.random()*0.03, phase:Math.random()*Math.PI*2
+      });
     } else if(scene === 'hype'){
       // Energy streaks moving upward
       for(let i=0;i<35;i++) particles.push({
@@ -644,21 +773,18 @@ const BG = (() => {
   }
 
   function drawWind(W, H){
-    // Deep ocean gradient
     const g = ctx2d.createLinearGradient(0,0,0,H);
     g.addColorStop(0, '#010a14');
     g.addColorStop(1, '#031828');
     ctx2d.fillStyle = g;
     ctx2d.fillRect(0,0,W,H);
 
-    // Subtle caustic light from above
     const radG = ctx2d.createRadialGradient(W/2,-H*0.1,0, W/2,-H*0.1, H*0.8);
     radG.addColorStop(0, 'rgba(30,90,130,0.12)');
     radG.addColorStop(1, 'rgba(0,0,0,0)');
     ctx2d.fillStyle = radG;
     ctx2d.fillRect(0,0,W,H);
 
-    // Draw orbs first
     particles.filter(p=>p.type==='orb').forEach(p=>{
       p.x += p.dx; p.y += p.dy;
       if(p.y + p.r < 0) p.y = H + p.r;
@@ -675,7 +801,6 @@ const BG = (() => {
       ctx2d.fill();
     });
 
-    // Draw rain drops
     ctx2d.save();
     particles.filter(p=>!p.type).forEach(p=>{
       p.y += p.speed;
@@ -692,7 +817,6 @@ const BG = (() => {
   }
 
   function drawWork(W, H){
-    // Deep indigo/purple sky
     const g = ctx2d.createLinearGradient(0,0,0,H);
     g.addColorStop(0, '#04020e');
     g.addColorStop(0.5,'#0d0620');
@@ -700,14 +824,12 @@ const BG = (() => {
     ctx2d.fillStyle = g;
     ctx2d.fillRect(0,0,W,H);
 
-    // Moon glow
     const mg = ctx2d.createRadialGradient(W*0.72, H*0.15, 0, W*0.72, H*0.15, H*0.4);
     mg.addColorStop(0,'rgba(180,160,220,0.08)');
     mg.addColorStop(1,'rgba(0,0,0,0)');
     ctx2d.fillStyle = mg;
     ctx2d.fillRect(0,0,W,H);
 
-    // Stars
     particles.filter(p=>p.type==='star').forEach(p=>{
       p.twinkle += 0.02;
       const op = p.op * (0.6 + Math.sin(p.twinkle)*0.4);
@@ -717,8 +839,6 @@ const BG = (() => {
       ctx2d.fill();
     });
 
-    // Mountain silhouettes — two layers for depth
-    // Far mountain (lighter)
     ctx2d.fillStyle = 'rgba(18,8,40,0.9)';
     ctx2d.beginPath();
     ctx2d.moveTo(0,H);
@@ -736,7 +856,6 @@ const BG = (() => {
     ctx2d.closePath();
     ctx2d.fill();
 
-    // Near mountain (darker)
     ctx2d.fillStyle = 'rgba(8,3,18,1)';
     ctx2d.beginPath();
     ctx2d.moveTo(0,H);
@@ -754,7 +873,6 @@ const BG = (() => {
     ctx2d.closePath();
     ctx2d.fill();
 
-    // Mist
     particles.filter(p=>p.type==='mist').forEach(p=>{
       p.x += p.dx; p.y += p.dy;
       if(p.y + p.r < H*0.3) p.y = H + p.r;
@@ -772,8 +890,70 @@ const BG = (() => {
     });
   }
 
+  function drawCold(W, H){
+    // Pale, flat, sub-zero light — deliberately colder and emptier than Wind Down
+    const g = ctx2d.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, '#050b10');
+    g.addColorStop(0.55,'#08151d');
+    g.addColorStop(1, '#0c2029');
+    ctx2d.fillStyle = g;
+    ctx2d.fillRect(0,0,W,H);
+
+    // Low horizon glow — thin winter sun
+    const hg = ctx2d.createLinearGradient(0,H*0.55,0,H*0.78);
+    hg.addColorStop(0,'rgba(0,0,0,0)');
+    hg.addColorStop(0.55,'rgba(170,215,235,0.055)');
+    hg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx2d.fillStyle = hg;
+    ctx2d.fillRect(0,H*0.55,W,H*0.25);
+
+    // Frost blooms
+    particles.filter(p=>p.type==='frost').forEach(p=>{
+      p.x += p.dx; p.y += p.dy;
+      if(p.x < -p.r) p.x = W+p.r; if(p.x > W+p.r) p.x = -p.r;
+      if(p.y < -p.r) p.y = H+p.r; if(p.y > H+p.r) p.y = -p.r;
+      p.phase += 0.004;
+      const pulse = 0.9 + Math.sin(p.phase)*0.1;
+      const fg = ctx2d.createRadialGradient(p.x,p.y,0, p.x,p.y, p.r*pulse);
+      fg.addColorStop(0,`rgba(190,225,240,${p.op})`);
+      fg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx2d.fillStyle = fg;
+      ctx2d.beginPath();
+      ctx2d.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);
+      ctx2d.fill();
+    });
+
+    // Ice-shelf silhouette — flat and low, not peaked
+    ctx2d.fillStyle = 'rgba(6,16,22,0.92)';
+    ctx2d.beginPath();
+    ctx2d.moveTo(0,H);
+    ctx2d.lineTo(0, H*0.74);
+    ctx2d.lineTo(W*0.18, H*0.71);
+    ctx2d.lineTo(W*0.26, H*0.76);
+    ctx2d.lineTo(W*0.47, H*0.70);
+    ctx2d.lineTo(W*0.58, H*0.75);
+    ctx2d.lineTo(W*0.79, H*0.69);
+    ctx2d.lineTo(W*0.88, H*0.74);
+    ctx2d.lineTo(W, H*0.72);
+    ctx2d.lineTo(W, H);
+    ctx2d.closePath();
+    ctx2d.fill();
+
+    // Drifting crystals
+    particles.filter(p=>p.type==='flake').forEach(p=>{
+      p.sway += 0.012;
+      p.y += p.speed;
+      p.x += p.drift + Math.sin(p.sway)*0.25;
+      if(p.y > H){ p.y = -4; p.x = Math.random()*W; }
+      if(p.x < -4) p.x = W+4; if(p.x > W+4) p.x = -4;
+      ctx2d.fillStyle = `rgba(214,238,248,${p.op})`;
+      ctx2d.beginPath();
+      ctx2d.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx2d.fill();
+    });
+  }
+
   function drawHype(W, H){
-    // Dark base with fire glow at bottom
     const g = ctx2d.createLinearGradient(0,0,0,H);
     g.addColorStop(0,'#080404');
     g.addColorStop(0.6,'#100604');
@@ -781,7 +961,6 @@ const BG = (() => {
     ctx2d.fillStyle = g;
     ctx2d.fillRect(0,0,W,H);
 
-    // Fire glow from below
     const fg = ctx2d.createRadialGradient(W/2, H+H*0.2, 0, W/2, H+H*0.2, H*1.1);
     fg.addColorStop(0,'rgba(220,80,20,0.22)');
     fg.addColorStop(0.4,'rgba(160,40,0,0.12)');
@@ -789,7 +968,6 @@ const BG = (() => {
     ctx2d.fillStyle = fg;
     ctx2d.fillRect(0,0,W,H);
 
-    // Far jagged mountains
     ctx2d.fillStyle = 'rgba(28,10,4,0.9)';
     ctx2d.beginPath();
     ctx2d.moveTo(0,H);
@@ -810,7 +988,6 @@ const BG = (() => {
     ctx2d.closePath();
     ctx2d.fill();
 
-    // Near mountains
     ctx2d.fillStyle = 'rgba(10,3,0,1)';
     ctx2d.beginPath();
     ctx2d.moveTo(0,H);
@@ -830,7 +1007,6 @@ const BG = (() => {
     ctx2d.closePath();
     ctx2d.fill();
 
-    // Energy streaks moving upward
     particles.filter(p=>!p.type).forEach(p=>{
       p.y -= p.speed;
       if(p.y + p.len < 0){ p.y = H + Math.random()*H; p.x = Math.random()*W; }
@@ -845,7 +1021,6 @@ const BG = (() => {
       ctx2d.stroke();
     });
 
-    // Pulsing energy ring from bottom center
     const r = (H * 0.15) + Math.sin(frame * 0.04) * (H * 0.05);
     const er = ctx2d.createRadialGradient(W/2, H*0.92, r*0.3, W/2, H*0.92, r);
     er.addColorStop(0,'rgba(255,120,30,0.0)');
@@ -864,6 +1039,7 @@ const BG = (() => {
     ctx2d.clearRect(0,0,W,H);
     if(scene==='wind') drawWind(W,H);
     else if(scene==='work') drawWork(W,H);
+    else if(scene==='cold') drawCold(W,H);
     else if(scene==='hype') drawHype(W,H);
   }
 
@@ -877,6 +1053,7 @@ const BG = (() => {
       requestAnimationFrame(()=> canvas.classList.add('visible'));
     },
     stop(){
+      if(!canvas) return;
       canvas.classList.remove('visible');
       setTimeout(()=>{ cancelAnimationFrame(raf); scene=null; }, 3000);
     },
@@ -890,7 +1067,7 @@ window.addEventListener('resize', ()=> BG.resize && BG.resize());
 // AMBIENT SOUND ENGINE
 // ──────────────────────────────────────────────────
 const AMB = (() => {
-  let nodes = [];   // all running nodes to stop later
+  let nodes = [];
   let masterGain = null;
   let active = false;
 
@@ -924,7 +1101,6 @@ const AMB = (() => {
     const mg = master();
     fadeIn(mg, 0.85, 4);
 
-    // Rain — two layers of filtered noise
     const bufLen = ctx.sampleRate * 3;
     const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
     const d = buf.getChannelData(0);
@@ -944,7 +1120,6 @@ const AMB = (() => {
       src.start(); nodes.push(src, g);
     });
 
-    // Bowl drone — A2 with slow vibrato
     [110, 165, 220].forEach((freq, i)=>{
       const osc = ctx.createOscillator();
       osc.type = 'sine'; osc.frequency.value = freq;
@@ -959,16 +1134,62 @@ const AMB = (() => {
     });
   }
 
+  // --- COLD: wind over ice + high glassy drone ---
+  function startCold(){
+    const ctx = getCtx();
+    const mg = master();
+    fadeIn(mg, 0.8, 5);
+
+    // Wind — lowpassed noise with a slow sweeping filter
+    const bufLen = ctx.sampleRate * 4;
+    const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<bufLen;i++) d[i] = (Math.random()*2-1);
+
+    const src = ctx.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 1.5;
+    const sweep = ctx.createOscillator(); sweep.frequency.value = 0.045;
+    const sweepG = ctx.createGain(); sweepG.gain.value = 380;
+    sweep.connect(sweepG); sweepG.connect(lp.frequency);
+    const g = ctx.createGain(); g.gain.value = 0.16;
+    src.connect(lp); lp.connect(g); g.connect(mg);
+    src.start(); sweep.start();
+    nodes.push(src, sweep, g);
+
+    // Faint high hiss — spindrift
+    const src2 = ctx.createBufferSource();
+    src2.buffer = buf; src2.loop = true;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 4200;
+    const g2 = ctx.createGain(); g2.gain.value = 0.028;
+    src2.connect(hp); hp.connect(g2); g2.connect(mg);
+    src2.start(); nodes.push(src2, g2);
+
+    // Glassy drone — open fifth, very still
+    [98, 147, 294].forEach((freq,i)=>{
+      const osc = ctx.createOscillator();
+      osc.type='sine'; osc.frequency.value = freq;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.05 + i*0.017;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 0.5;
+      lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      const og = ctx.createGain(); og.gain.value = [0.055,0.032,0.014][i];
+      osc.connect(og); og.connect(mg);
+      osc.start(); lfo.start();
+      nodes.push(osc, lfo, og);
+    });
+  }
+
   // --- BREATHWORK: cave hum + slow chord swells ---
   function startWork(){
     const ctx = getCtx();
     const mg = master();
     fadeIn(mg, 0.8, 4);
 
-    // Deep cave resonance — E1 + harmonics
     [41.2, 82.4, 123.5, 164.8].forEach((freq, i)=>{
       const osc = ctx.createOscillator();
-      osc.type = i===0 ? 'sine' : 'sine';
+      osc.type = 'sine';
       osc.frequency.value = freq;
       const lfo = ctx.createOscillator();
       lfo.frequency.value = 0.07 + i*0.02;
@@ -984,7 +1205,6 @@ const AMB = (() => {
       nodes.push(osc, lfo, tremoloLfo, g);
     });
 
-    // Mystical shimmer — high partial
     const shimmer = ctx.createOscillator();
     shimmer.type = 'sine'; shimmer.frequency.value = 528;
     const shimG = ctx.createGain(); shimG.gain.value = 0.018;
@@ -1002,7 +1222,6 @@ const AMB = (() => {
     const mg = master();
     fadeIn(mg, 0.75, 2);
 
-    // Energy hum — D2 rising pulse
     [73.4, 110, 146.8].forEach((freq, i)=>{
       const osc = ctx.createOscillator();
       osc.type = 'sawtooth'; osc.frequency.value = freq;
@@ -1017,9 +1236,7 @@ const AMB = (() => {
       nodes.push(osc, lfo, g);
     });
 
-    // Tribal kick drum — scheduled repeating pattern
     const BPM = 128, beat = 60/BPM;
-    // Pattern: kick on 1, 2.5, 3  (feel of tribal 6/8)
     const pattern = [0, beat*1.5, beat*2, beat*3.5, beat*4];
     let nextBeat = ctx.currentTime + 0.1;
 
@@ -1028,7 +1245,6 @@ const AMB = (() => {
       while(nextBeat < ctx.currentTime + lookAhead){
         pattern.forEach(offset=>{
           const t = nextBeat + offset;
-          // Kick
           const ko = ctx.createOscillator();
           ko.type = 'sine';
           ko.frequency.setValueAtTime(160, t);
@@ -1038,12 +1254,11 @@ const AMB = (() => {
           kg.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
           ko.connect(kg); kg.connect(mg);
           ko.start(t); ko.stop(t + 0.3);
-          // Hi snare every 2nd beat
           if(offset === beat*2 || offset === beat*3.5){
-            const bufLen = Math.floor(ctx.sampleRate * 0.12);
-            const nbuf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+            const bl = Math.floor(ctx.sampleRate * 0.12);
+            const nbuf = ctx.createBuffer(1, bl, ctx.sampleRate);
             const nd = nbuf.getChannelData(0);
-            for(let i=0;i<bufLen;i++) nd[i]=Math.random()*2-1;
+            for(let i=0;i<bl;i++) nd[i]=Math.random()*2-1;
             const nsrc = ctx.createBufferSource(); nsrc.buffer = nbuf;
             const nhp = ctx.createBiquadFilter(); nhp.type='highpass'; nhp.frequency.value=1800;
             const ng = ctx.createGain();
@@ -1053,7 +1268,7 @@ const AMB = (() => {
             nsrc.start(t); nsrc.stop(t+0.12);
           }
         });
-        nextBeat += beat * 4; // one bar
+        nextBeat += beat * 4;
       }
       if(active) drumTimer = setTimeout(scheduleDrums, 100);
     }
@@ -1068,6 +1283,7 @@ const AMB = (() => {
       active = true;
       if(cat==='wind') startWind();
       else if(cat==='work') startWork();
+      else if(cat==='cold') startCold();
       else if(cat==='hype') startHype();
     },
     stop(){
@@ -1086,97 +1302,154 @@ const AMB = (() => {
 // ──────────────────────────────────────────────────
 // TECHNIQUE DATA
 // ──────────────────────────────────────────────────
+const WHM_WARN = '⚠ Land only. Never in or near water, in a bath, sauna, standing, or while driving — and never in the minutes before entering water. Low CO₂ removes the urge to breathe, so blackout can arrive with no warning. Sit or lie down.';
+
 const TECHS = [
-  // WIND DOWN
-  { id:'resonance', cat:'wind', name:'Resonance Breathing', origin:'Stephen Elliott · Coherent Breathing',
+  // ── WIND DOWN ──
+  { id:'resonance', cat:'wind', name:'Resonance Breathing', origin:'Coherent Breathing · HRV research',
     rhythm:'5s in · 5s out',
-    desc:'~5–6 breaths per minute creates heart rate variability coherence, balancing the autonomic nervous system. The most evidence-backed relaxation technique.',
-    type:'timed', phases:[{l:'Inhale',d:5,s:1.0},{l:'Exhale',d:5,s:.55}], ctrls:['dur'] },
+    desc:'About 5–6 breaths per minute, the rate at which breathing, heart rate and blood pressure rhythms line up. The best-evidenced technique here for raising vagal tone, and the one to use if you want to track progress with HRV.',
+    type:'timed', phases:[{l:'Inhale',d:5,s:1.0},{l:'Exhale',d:5,s:.55}], ctrls:['dur'],
+    coach:['Nose in, nose out','Shoulders soft, jaw loose','Let the belly lead','No effort at the turnaround'] },
+
+  { id:'diaphragm', cat:'wind', name:'Diaphragmatic Breathing', origin:'Belly breathing · baseline skill',
+    rhythm:'6s in · 6s out · nasal',
+    desc:'Slow nasal breaths where the belly rises and the chest stays quiet. Lie down with one hand on the belly and one on the chest — only the lower hand should move. This is the mechanic underneath every other technique in the app; worth owning before anything else.',
+    type:'timed', phases:[{l:'Inhale',d:6,s:1.0},{l:'Exhale',d:6,s:.55}], ctrls:['dur'],
+    coach:['Lower hand rises, upper hand still','Widen the ribs sideways','Exhale without pushing','Nothing in the neck or shoulders'] },
 
   { id:'478', cat:'wind', name:'4-7-8 Breath', origin:'Dr. Andrew Weil · Pranayama',
     rhythm:'In 4 · Hold 7 · Out 8',
-    desc:'A "natural tranquilizer" for the nervous system. The 7-count hold and long exhale strongly activate the vagus nerve, reducing cortisol rapidly.',
-    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:7,s:1.0},{l:'Exhale',d:8,s:.55}], ctrls:['dur'] },
+    desc:'A long hold and a longer exhale. Widely used before sleep; the evidence is mostly on subjective calm and slowed heart rate rather than hard biomarkers. Start with four cycles and build.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:7,s:1.0},{l:'Exhale',d:8,s:.55}], ctrls:['dur'],
+    coach:['Tongue behind the top teeth','Exhale through pursed lips','Empty fully but never force','Light-headed? Shorten the hold'] },
 
-  { id:'physiological', cat:'wind', name:'Physiological Sigh', origin:'Stanford · Yackle & Bhatt',
-    rhythm:'Double inhale · Long exhale',
-    desc:'Two quick nasal inhales then a slow, complete exhale. Stanford research shows this is the fastest way to reduce acute physiological stress in a single breath.',
-    type:'timed', phases:[{l:'Inhale',d:2,s:.78},{l:'Inhale+',d:1,s:1.0},{l:'Exhale',d:6,s:.55}], ctrls:['dur'] },
+  { id:'physiological', cat:'wind', name:'Physiological Sigh', origin:'Stanford · Yackle & Huberman',
+    rhythm:'Double inhale · long exhale',
+    desc:'Two nasal inhales stacked, then a slow complete exhale. Reinflates collapsed alveoli and offloads CO₂ fast. The quickest single-breath tool for dropping acute stress mid-day.',
+    type:'timed', phases:[{l:'Inhale',d:2,s:.78},{l:'Inhale+',d:1,s:1.0},{l:'Exhale',d:6,s:.55}], ctrls:['dur'],
+    coach:['Second sip is short and sharp','Long, unhurried release','Two or three rounds is often enough'] },
 
   { id:'21', cat:'wind', name:'2:1 Breathing', origin:'Yoga Pranayama tradition',
     rhythm:'Exhale 2× the inhale',
-    desc:'Exhale is twice as long as the inhale, activating the parasympathetic rest response. Ideal before sleep or after intense exercise.',
-    type:'timed', getPhases:()=>{const i=+document.getElementById('inhaleSl').value;return[{l:'Inhale',d:i,s:1.0},{l:'Exhale',d:i*2,s:.55}]}, ctrls:['dur','ratio'] },
+    desc:'Exhale twice as long as the inhale, no hold. Lengthening the exhale raises vagal tone via lung stretch receptors and the baroreflex. Set the slider to 4 for the classic 4–8 rhythm. Note: this is a pranayama technique, not a Wim Hof one.',
+    type:'timed', getPhases:()=>{const i=+document.getElementById('inhaleSl').value;return[{l:'Inhale',d:i,s:1.0},{l:'Exhale',d:i*2,s:.55}]}, ctrls:['dur','ratio'],
+    coach:['Soft, whispering exhale','Do not squeeze the last of the air out','If the inhale feels rushed, shorten the ratio'] },
 
-  // BREATHWORK
-  { id:'box', cat:'work', name:'Box Breathing', origin:'Navy SEALs · Combat Stress Protocol',
+  // ── BREATHWORK ──
+  { id:'box', cat:'work', name:'Box Breathing', origin:'Tactical breathing · 4-4-4-4',
     rhythm:'4 · 4 · 4 · 4',
-    desc:'Equal counts of inhale, hold, exhale, hold. Used by Navy SEALs to calm the nervous system under pressure. Promotes balanced focus without sedation.',
-    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:4,s:1.0},{l:'Exhale',d:4,s:.55},{l:'Hold',d:4,s:.55}], ctrls:['dur'] },
+    desc:'Equal inhale, hold, exhale, hold. Balanced rather than sedating — keeps you alert while pulling arousal down. Good for the hour before bed when you want to settle without going fully limp.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:4,s:1.0},{l:'Exhale',d:4,s:.55},{l:'Hold',d:4,s:.55}], ctrls:['dur'],
+    coach:['Keep the throat open on the holds','Same volume every cycle','Eyes soft or closed'] },
 
   { id:'wimhof', cat:'work', name:'Wim Hof Method', origin:'Wim Hof — "The Iceman"',
     rhythm:'30 power breaths + holds',
-    desc:'Controlled hyperventilation followed by breath retention developed by Dutch extreme athlete Wim Hof. Affects the autonomic nervous system, inflammatory response and cold tolerance. Do NOT practice near water.',
+    desc:'30–40 deep breaths, then a relaxed exhale hold, then a 15-second recovery hold on a full inhale. The hyperventilation drops CO₂ and drives adrenaline; oxygen only falls during the retention. Note the retention is on a relaxed exhale, not a forced-empty one.',
     type:'wimhof', ctrls:['wh'],
-    warn:'⚠ Do NOT practice in water, while driving, or unsupervised. Dizziness and tingling are normal. Fainting is possible — sit or lie down.' },
+    coach:['In through the nose, out through the mouth, no force','Tingling and light-headedness are expected','Tap Next Phase when the urge to breathe arrives','Recovery hold: soften face, shoulders, chest'],
+    warn: WHM_WARN },
+
+  { id:'whm_immune', cat:'work', name:'Anti-Inflammatory Protocol', origin:'Radboud UMC · Kox / Zwaag',
+    rhythm:'4 rounds · morning · fasted',
+    desc:'The WHM protocol as run in the Radboud endotoxin trials: four rounds, morning, empty stomach. The adrenaline surge dampens TNF-α, IL-6 and IL-8 and raises IL-10. Two caveats worth holding: this suppresses inflammation rather than boosting immunity, so it is not a tool for an active infection — and the 2022 follow-up found the effect depended on pairing the breathing with regular cold exposure, not the breathing alone.',
+    type:'wimhof', ctrls:['wh'], whDefault:'4',
+    coach:['Empty stomach, lying down','Round 4 is the one the studies used','Pair with your cold routine, not instead of it','Not for use while acutely ill'],
+    warn: WHM_WARN },
+
+  { id:'whm_recovery', cat:'work', name:'Recovery Reset', origin:'Wim Hof Method · recovery breath',
+    rhythm:'Full inhale · hold 15s · release',
+    desc:'The WHM recovery breath on its own, without the hyperventilation: a deep inhale held for 15 seconds while you deliberately soften the face, shoulders and chest, then a long release. Trains the switch from high arousal back to calm. Safe to run any time, including after training or a hard meeting.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Hold',d:15,s:1.0},{l:'Exhale',d:8,s:.55},{l:'Rest',d:6,s:.62}], ctrls:['dur'],
+    coach:['Scan: forehead, jaw, shoulders, chest','Hold should feel full, not strained','Release slowly — do not dump the air','This is the part most people skip'] },
+
+  { id:'co2table', cat:'work', name:'CO₂ Tolerance Ladder', origin:'Apnea training · static tables',
+    rhythm:'6 holds · shrinking rest',
+    desc:'Fixed breath holds with progressively shorter recovery. Trains tolerance to rising CO₂ — the actual limiter on breath-hold comfort — without pushing into deep hypoxia. Hold on a relaxed exhale, never a forced one, and stop any round that starts to feel like a fight.',
+    type:'seq', ctrls:['hold'],
+    coach:['Relaxed exhale, then hold','Contractions are normal — panic is not','Shorten the hold before you shorten the rest','Seated or lying down. Never in water.'],
+    warn:'⚠ Seated or lying down, on land. Stop immediately if you feel faint.' },
 
   { id:'tummo', cat:'work', name:'Tummo Breathing', origin:'Tibetan Buddhist tradition',
     rhythm:'Power breaths + breath retention',
-    desc:'Ancient Tibetan "inner fire" meditation. Uses forceful diaphragmatic breathing with holds and visualisation to generate heat, heightened awareness, and deep meditative states. Structurally similar to Wim Hof.',
+    desc:'Tibetan "inner fire" practice. Forceful diaphragmatic breathing with holds and visualisation to generate heat and deep meditative states. Structurally close to WHM — brain imaging work suggests much of the heat comes from sustained intercostal muscle activity.',
     type:'wimhof', ctrls:['wh'],
-    warn:'⚠ Do NOT practice in water or while driving. Sit or lie down in a safe, quiet space.' },
+    coach:['Visualise heat at the base of the spine','Hold the breath low, not in the throat','Warmth spreads outward on each round'],
+    warn: WHM_WARN },
 
   { id:'altnostril', cat:'work', name:'Alternate Nostril', origin:'Nadi Shodhana Pranayama',
     rhythm:'L4 · H4 · R4 · H4',
-    desc:'Inhale left nostril, hold, exhale right, hold — alternating each cycle. Balances the two hemispheres, reduces anxiety, and supports clear mental focus.',
-    type:'timed', phases:[{l:'Left in',d:4,s:1.0},{l:'Hold',d:4,s:1.0},{l:'Right out',d:4,s:.55},{l:'Hold',d:4,s:.55}], ctrls:['dur'] },
+    desc:'Inhale left nostril, hold, exhale right, hold — alternating each cycle. Slow, symmetrical and undemanding; useful when you want focus without stimulation.',
+    type:'timed', phases:[{l:'Left in',d:4,s:1.0},{l:'Hold',d:4,s:1.0},{l:'Right out',d:4,s:.55},{l:'Hold',d:4,s:.55}], ctrls:['dur'],
+    coach:['Thumb closes right, ring finger closes left','Light touch — do not press the nostril flat','Switch sides after the exhale'] },
 
-  // HYPE UP
+  // ── COLD EXPOSURE ──
+  { id:'preplunge', cat:'cold', name:'Pre-Plunge Prep', origin:'Cold immersion · on land only',
+    rhythm:'4s in · 6s out · 2 min',
+    desc:'Calm, slow nasal breathing before entry — deliberately not power breathing. Settles baseline arousal so the cold shock response has less to amplify. Finish this on land, return to normal breathing, then walk in slowly and keep your head above water.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Exhale',d:6,s:.55}], ctrls:['dur'],
+    coach:['Feet planted, shoulders down','Decide your exit time before you go in','Slow entry — do not jump','Never alone in open water'],
+    warn:'⚠ Do not run Wim Hof or any power-breathing rounds before entering water, including on the bank. Drownings have been linked to it.' },
+
+  { id:'coldshock', cat:'cold', name:'Cold Shock Control', origin:'Cold water immersion physiology',
+    rhythm:'4s in · 6s pursed-lip out',
+    desc:'For the first 60–90 seconds in the water. The gasp reflex peaks within about 30 seconds and fades over 2–3 minutes. Long whispered exhales through pursed lips override the involuntary hyperventilation and keep blood flow to the brain steady. It habituates fast: after roughly 5–6 short exposures the reflex is about half as strong, which is why frequency beats duration.',
+    type:'timed', phases:[{l:'Inhale',d:4,s:1.0},{l:'Exhale',d:6,s:.55}], ctrls:['dur'],
+    coach:['Do not gasp — long whispered exhale','Shoulders under, hands relaxed','It eases at 60–90 seconds','Get out on your plan, not on your mood'] },
+
+  { id:'horsestance', cat:'cold', name:'Horse Stance Rewarm', origin:'Wim Hof Method · post-immersion',
+    rhythm:'5s in · 5s out · nasal',
+    desc:'Wide stance, knees bent, slow rhythmic sweeps of the arms and upper body while breathing calmly through the nose. Heat comes from large muscle groups instead of waiting for shivering. Skip the hot shower or sauna straight afterwards — rapid rewarming measurably increases afterdrop. Dry off, dress the torso first, keep moving gently for 10–15 minutes.',
+    type:'timed', phases:[{l:'Inhale',d:5,s:1.0},{l:'Exhale',d:5,s:.55}], ctrls:['dur'],
+    coach:['Feet wide, knees soft, weight low','Sweep the arms wide on the inhale','Gentle twist through the ribs on the exhale','Nasal only — no hyperventilating','No hot shower yet'] },
+
+  // ── HYPE UP ──
   { id:'kapalabhati', cat:'hype', name:'Kapalabhati', origin:'Hatha Yoga · "Skull Shining Breath"',
     rhythm:'Rapid forceful exhales · passive inhales',
-    desc:'Forceful rhythmic exhales pump oxygenated blood to the brain, energise the body, and clear the respiratory tract. Ancient hatha yoga purification practice. 3 rounds of 30.',
+    desc:'Sharp rhythmic exhales with passive inhales. Clears the respiratory tract and raises alertness quickly. Three rounds of 30.',
     type:'kap', passive:true, ctrls:['kap'],
-    warn:'⚠ Not during pregnancy or with heart disease/high BP. Practise on an empty stomach.' },
+    coach:['Sharp abdominal snap on each exhale','Let the inhale happen by itself','Face and shoulders stay still'],
+    warn:'⚠ Not during pregnancy, or with heart disease, high blood pressure or epilepsy. Empty stomach. Seated, never near water.' },
 
   { id:'bhastrika', cat:'hype', name:'Bhastrika', origin:'Pranayama · "Bellows Breath"',
     rhythm:'Forceful in AND out',
-    desc:'Rapid, forceful inhales AND exhales — both active. More intense than Kapalabhati. Stokes inner fire, raises energy fast, and sharpens focus before physical activity.',
+    desc:'Rapid, forceful inhales and exhales — both active. More intense than Kapalabhati. Raises arousal fast; useful before training, poor within three hours of sleep.',
     type:'kap', passive:false, ctrls:['kap'],
-    warn:'⚠ Not during pregnancy or with heart conditions. Start very slowly and stop if dizzy.' },
+    coach:['Equal force in both directions','Ribs expand, shoulders stay down','Stop early if the head swims'],
+    warn:'⚠ Not during pregnancy or with heart conditions. Start slow and stop if dizzy. Seated, never near water.' },
 
-  { id:'breathfire', cat:'hype', name:'Breath of Fire', origin:'Kundalini Yoga · Yogi Bhajan',
+  { id:'breathfire', cat:'hype', name:'Breath of Fire', origin:'Kundalini Yoga',
     rhythm:'Fast equal nasal in/out',
-    desc:'Rapid continuous nasal breathing at equal inhale/exhale. Activates the solar plexus, strengthens the nervous system, builds prana. Core practice in Kundalini kriyas.',
+    desc:'Rapid continuous nasal breathing at an even in/out rhythm. Builds heat and alertness. Begin with 30-second bouts and extend over weeks rather than days.',
     type:'kap', passive:false, ctrls:['kap'],
-    warn:'⚠ Not during pregnancy. Begin with 30-second sessions and build gradually over weeks.' },
+    coach:['Nasal only, even and light','Navel pumps, chest stays quiet','Build the duration slowly over weeks'],
+    warn:'⚠ Not during pregnancy. Begin with 30-second sessions and build gradually. Seated, never near water.' },
 ];
 
 // ──────────────────────────────────────────────────
 // BUILD HOME CARDS
 // ──────────────────────────────────────────────────
+function attachCardTap(el, fn){
+  let startY = 0, moved = false;
+  el.addEventListener('touchstart', e=>{ startY = e.touches[0].clientY; moved = false; }, {passive:true});
+  el.addEventListener('touchmove',  e=>{ if(Math.abs(e.touches[0].clientY - startY) > 8) moved = true; }, {passive:true});
+  el.addEventListener('touchend',   e=>{ if(!moved){ e.preventDefault(); fn(); } }, {passive:false});
+  el.addEventListener('click', fn);
+}
+
 function buildHome(){
-  const grids={wind:'g-wind',work:'g-work',hype:'g-hype'};
+  const grids={wind:'g-wind',work:'g-work',cold:'g-cold',hype:'g-hype'};
   TECHS.forEach(t=>{
     const g=document.getElementById(grids[t.cat]);
+    if(!g) return;
     const el=document.createElement('div');
     el.className='tech-card '+t.cat;
     el.innerHTML=`<div class="card-name">${t.name}</div>
 <div class="card-origin">${t.origin}</div>
 <div class="card-rhythm">${t.rhythm}</div>
-<div class="card-desc">${t.desc}</div>`;
-    let touchStartY = 0;
-    let touchMoved = false;
-    el.addEventListener('touchstart', function(e){
-      touchStartY = e.touches[0].clientY;
-      touchMoved = false;
-    }, {passive: true});
-    el.addEventListener('touchmove', function(e){
-      if(Math.abs(e.touches[0].clientY - touchStartY) > 8) touchMoved = true;
-    }, {passive: true});
-    el.addEventListener('touchend', function(e){
-      if(!touchMoved){ e.preventDefault(); open(t.id); }
-    }, {passive: false});
-    el.addEventListener('click', function(){ open(t.id); });
+<div class="card-desc">${t.desc}</div>
+${t.warn?'<div class="card-flag">Land only · read the warning</div>':''}`;
+    attachCardTap(el, ()=>open(t.id));
     g.appendChild(el);
   });
 }
@@ -1188,62 +1461,81 @@ let T=null; // current technique
 
 function open(id){
   T=TECHS.find(x=>x.id===id);
+  if(!T) return;
   document.getElementById('pt-name').textContent=T.name;
   document.getElementById('pt-origin').textContent=T.origin;
-  // button colour
   const btn=document.getElementById('startBtn');
   btn.className='start-btn '+T.cat;
-  // controls
-  document.getElementById('rowDur').style.display=T.type==='wimhof'||T.type==='kap'?'none':'flex';
-  document.getElementById('rowRatio').style.display=T.ctrls.includes('ratio')?'flex':'none';
-  document.getElementById('rowKap').style.display=T.ctrls.includes('kap')?'flex':'none';
-  document.getElementById('rowWH').style.display=T.ctrls.includes('wh')?'flex':'none';
+  // controls — duration only applies to looping timed techniques
+  document.getElementById('rowDur').style.display  = T.type==='timed' ? 'flex':'none';
+  document.getElementById('rowRatio').style.display= T.ctrls.includes('ratio')?'flex':'none';
+  document.getElementById('rowKap').style.display  = T.ctrls.includes('kap')?'flex':'none';
+  document.getElementById('rowWH').style.display   = T.ctrls.includes('wh')?'flex':'none';
+  document.getElementById('rowHold').style.display = T.ctrls.includes('hold')?'flex':'none';
+  if(T.whDefault) document.getElementById('whRnd').value = T.whDefault;
+  if(pendingDur !== null && T.type==='timed'){
+    document.getElementById('durSel').value = String(pendingDur);
+  }
+  pendingDur = null;
   const w=document.getElementById('warnTxt');
   if(T.warn){w.textContent=T.warn;w.style.display='block'}else w.style.display='none';
-  // circle colour
   setCircleColor(T.cat);
-  // start ambient background scene preview
   BG.start(T.cat);
-  // reset
   resetPlayer();
   buildCueStrip();
   buildRoundDots();
-  document.getElementById('home').classList.add('hidden');
+  setCoach(T.coach ? T.coach[0] : '');
+  hideAllScreens();
   document.getElementById('player').classList.remove('hidden');
+}
+
+function hideAllScreens(){
+  ['home','player','builder','history','protocol'].forEach(id=>
+    document.getElementById(id).classList.add('hidden'));
 }
 
 function goHome(){
   if(running)endSession();
   BG.stop();
   AMB.stop();
-  document.getElementById('player').classList.add('hidden');
+  hideAllScreens();
   document.getElementById('home').classList.remove('hidden');
+  updateHomeStreak();
   T=null;
 }
 
-const CAT_RGB={wind:'79,168,199',work:'160,126,203',hype:'203,126,126'};
+const CAT_RGB={wind:'79,168,199',work:'160,126,203',hype:'203,126,126',cold:'186,222,238'};
+const CAT_NAMES={wind:'Wind Down',work:'Breathwork',cold:'Cold Exposure',hype:'Hype Up'};
+
 function setCircleColor(cat){
-  const c=CAT_RGB[cat];
+  const c=CAT_RGB[cat]||CAT_RGB.wind;
   const bc=document.getElementById('bc');
   bc.style.background=`radial-gradient(ellipse at 40% 38%,rgba(${c},.18) 0%,rgba(${c},.10) 40%,transparent 70%)`;
   bc.style.borderColor=`rgba(${c},.35)`;
   bc.style.boxShadow=`0 0 40px rgba(${c},.1),inset 0 0 60px rgba(${c},.06)`;
   document.getElementById('prog').style.stroke=`rgba(${c},1)`;
-  // phase label
   document.getElementById('pl').style.color=`rgba(${c},.85)`;
+}
+
+function setCoach(txt){
+  const el = document.getElementById('coach');
+  el.style.opacity = 0;
+  setTimeout(()=>{ el.textContent = txt || ''; el.style.opacity = 1; }, 200);
 }
 
 // ──────────────────────────────────────────────────
 // PLAYER STATE
 // ──────────────────────────────────────────────────
-let running=false,phTimer=null,sesTimer=null;
+let running=false,phTimer=null,sesTimer=null,coachTimer=null;
 let phaseIdx=0,cycCnt=0,sesSec=0,maxSec=300;
 let whRound=0,whState='',whBreath=0;
 let kapRound=0,kapCount=0;
+let seqPhases=[],seqIdx=0;
+let pendingDur=null;
 
 function resetPlayer(){
-  clearTimeout(phTimer);clearInterval(sesTimer);clearTimeout(kapTick);
-  running=false;phaseIdx=0;cycCnt=0;sesSec=0;whRound=0;whState='';whBreath=0;kapRound=0;kapCount=0;
+  clearTimeout(phTimer);clearInterval(phTimer);clearInterval(sesTimer);clearTimeout(kapTick);clearInterval(coachTimer);
+  running=false;phaseIdx=0;cycCnt=0;sesSec=0;whRound=0;whState='';whBreath=0;kapRound=0;kapCount=0;seqIdx=0;
   document.getElementById('startTxt').textContent='Begin';
   document.getElementById('pl').textContent='—';
   document.getElementById('cd').textContent='';
@@ -1262,14 +1554,27 @@ function resetPlayer(){
 function buildCueStrip(){
   const s=document.getElementById('cueStrip');
   s.innerHTML='';
-  const phases=getPhases();
-  const n=T.type==='wimhof'?0:T.type==='kap'?3:phases.length;
+  let n;
+  if(T.type==='wimhof') n=0;
+  else if(T.type==='kap') n=3;
+  else if(T.type==='seq') n=T.getSeq().length;
+  else n=getPhases().length;
   for(let i=0;i<n;i++){
     const d=document.createElement('div');
     d.className='cue-seg';d.id='cs'+i;
+    if(n>6){d.style.minWidth='6px';d.style.flex='1';}
     if(T.type==='kap'){d.style.minWidth='18px';d.style.flex='0 0 18px';}
     s.appendChild(d);
   }
+}
+
+function markCue(i){
+  document.querySelectorAll('.cue-seg').forEach((s,k)=>{
+    s.classList.remove('active','done');
+    if(k<i)s.classList.add('done');
+    if(k===i)s.classList.add('active');
+    s.style.background = k===i ? `rgb(${CAT_RGB[T.cat]})` : '';
+  });
 }
 
 function buildRoundDots(){
@@ -1300,18 +1605,17 @@ async function requestWakeLock(){
     if('wakeLock' in navigator){
       wakeLock = await navigator.wakeLock.request('screen');
     }
-  } catch(e){ /* silently ignore — not critical */ }
+  } catch(e){ /* not critical */ }
 }
 
 function releaseWakeLock(){
-  if(wakeLock){ wakeLock.release(); wakeLock = null; }
+  try{ if(wakeLock){ wakeLock.release(); wakeLock = null; } }catch(e){}
 }
 
-// Re-acquire wake lock if the page becomes visible again
-// (iOS releases it when the app briefly goes to background)
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'visible' && running){
     requestWakeLock();
+    if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
   }
 });
 
@@ -1322,16 +1626,32 @@ function toggleSession(){
   if(!running)startSes();else endSession();
 }
 
+function startCoachRotation(){
+  if(!T.coach || !T.coach.length) return;
+  let i = 0;
+  setCoach(T.coach[0]);
+  coachTimer = setInterval(()=>{
+    i = (i+1) % T.coach.length;
+    setCoach(T.coach[i]);
+  }, 14000);
+}
+
 function startSes(){
   if(!T)return;
   running=true;
   sesSec=0;
-  const dur=parseInt(document.getElementById('durSel').value)||0;
-  maxSec=dur===0?Infinity:dur*60;
+  if(T.type==='timed'){
+    const dur=parseInt(document.getElementById('durSel').value);
+    maxSec = (dur===0 || isNaN(dur)) ? Infinity : dur*60;
+  } else {
+    maxSec = Infinity; // wimhof / kap / seq end on their own structure
+  }
   document.getElementById('startTxt').textContent='End';
+  buildCueStrip();
   buildRoundDots();
   AMB.start(T.cat);
   requestWakeLock();
+  startCoachRotation();
 
   sesTimer=setInterval(()=>{
     sesSec++;
@@ -1343,11 +1663,11 @@ function startSes(){
   if(T.type==='timed')runTimed();
   else if(T.type==='wimhof')runWH();
   else if(T.type==='kap')runKap();
+  else if(T.type==='seq')runSeq();
 }
 
 function endSession(){
-  clearTimeout(phTimer);clearInterval(sesTimer);clearTimeout(kapTick);
-  // Save to history if meaningful (≥60s)
+  clearTimeout(phTimer);clearInterval(phTimer);clearInterval(sesTimer);clearTimeout(kapTick);clearInterval(coachTimer);
   if(running && T && sesSec >= 60) saveSession(T, sesSec, cycCnt);
   running=false;
   AMB.stop();
@@ -1361,51 +1681,47 @@ function endSession(){
   document.getElementById('bc').classList.remove('pulsing');
   document.getElementById('prog').style.transition='none';
   document.getElementById('prog').style.strokeDashoffset='760';
-  document.querySelectorAll('.cue-seg').forEach(s=>s.classList.remove('active','done'));
+  document.querySelectorAll('.cue-seg').forEach(s=>{s.classList.remove('active','done');s.style.background='';});
   document.querySelectorAll('.round-dot').forEach(d=>d.classList.remove('active','done'));
   document.getElementById('tapBtn').style.display='none';
+  if(T && T.coach) setCoach(T.coach[0]);
 }
 
 // ──────────────────────────────────────────────────
-// TIMED PHASES
+// SHARED PHASE RENDER
+// ──────────────────────────────────────────────────
+function renderPhase(ph){
+  playAndFeel(ph.l);
+  document.getElementById('pl').textContent=ph.l;
+  if(ph.sub!==undefined) document.getElementById('sd').textContent=ph.sub;
+  const bc=document.getElementById('bc');
+  bc.style.transition=`transform ${ph.d}s cubic-bezier(.4,0,.2,1)`;
+  bc.style.transform=`scale(${ph.s})`;
+  bc.classList.toggle('pulsing', ph.l.toLowerCase().startsWith('hold') && ph.s===1.0);
+  animBar(ph.d);
+}
+
+// ──────────────────────────────────────────────────
+// TIMED PHASES (looping)
 // ──────────────────────────────────────────────────
 function runTimed(){
   if(!running)return;
   const phases=getPhases();
   const ph=phases[phaseIdx];
-  const dur=ph.d;
+  markCue(phaseIdx);
+  renderPhase(ph);
 
-  playAndFeel(ph.l);
-  document.getElementById('pl').textContent=ph.l;
-  document.querySelectorAll('.cue-seg').forEach((s,i)=>{
-    s.classList.remove('active','done');
-    if(i<phaseIdx)s.classList.add('done');
-    if(i===phaseIdx)s.classList.add('active');
-    s.style.background=i===phaseIdx?`rgb(${CAT_RGB[T.cat]})`:'';
-  });
-
-  const bc=document.getElementById('bc');
-  bc.style.transition=`transform ${dur}s cubic-bezier(.4,0,.2,1)`;
-  bc.style.transform=`scale(${ph.s})`;
-  bc.classList.toggle('pulsing',ph.l.startsWith('Hold')&&ph.s===1.0);
-
-  const p=document.getElementById('prog');
-  p.style.transition='none';p.style.strokeDashoffset='760';
-  void p.offsetWidth;
-  p.style.transition=`stroke-dashoffset ${dur}s linear`;
-  p.style.strokeDashoffset='0';
-
-  let rem=dur;
+  let rem=ph.d;
   document.getElementById('cd').textContent=rem;
   clearTimeout(phTimer);
-  function tick2(){
+  function step(){
     rem--;
     document.getElementById('cd').textContent=rem>0?rem:'';
     if(rem>0 && rem<=3){ tick(); haptic('tick'); }
     if(rem<=0){nextPhase();}
-    else phTimer=setTimeout(tick2,1000);
+    else phTimer=setTimeout(step,1000);
   }
-  phTimer=setTimeout(tick2,1000);
+  phTimer=setTimeout(step,1000);
 }
 
 function nextPhase(){
@@ -1417,12 +1733,55 @@ function nextPhase(){
 }
 
 // ──────────────────────────────────────────────────
-// WIM HOF
+// SEQUENCE (runs once through — CO₂ ladder)
+// ──────────────────────────────────────────────────
+function runSeq(){
+  seqPhases = T.getSeq();
+  seqIdx = 0;
+  runSeqPhase();
+}
+
+function runSeqPhase(){
+  if(!running)return;
+  if(seqIdx >= seqPhases.length){
+    document.getElementById('pl').textContent='Complete';
+    document.getElementById('sd').textContent='Breathe freely';
+    document.getElementById('cd').textContent='';
+    document.getElementById('bc').style.transition='transform 2s ease';
+    document.getElementById('bc').style.transform='scale(.65)';
+    document.getElementById('bc').classList.remove('pulsing');
+    haptic('complete');
+    endSession();
+    return;
+  }
+  const ph = seqPhases[seqIdx];
+  markCue(seqIdx);
+  renderPhase(ph);
+
+  let rem = ph.d;
+  document.getElementById('cd').textContent = rem;
+  clearTimeout(phTimer);
+  function step(){
+    rem--;
+    document.getElementById('cd').textContent = rem>0?rem:'';
+    if(rem>0 && rem<=3){ tick(); haptic('tick'); }
+    if(rem<=0){
+      seqIdx++;
+      if(ph.l==='Hold'){ cycCnt++; document.getElementById('sCyc').textContent=cycCnt; }
+      runSeqPhase();
+    } else phTimer=setTimeout(step,1000);
+  }
+  phTimer=setTimeout(step,1000);
+}
+
+// ──────────────────────────────────────────────────
+// WIM HOF / TUMMO
 // ──────────────────────────────────────────────────
 function runWH(){
   whRound=0;whBreath=0;whState='power';
   document.getElementById('tapBtn').style.display='block';
-  document.getElementById('rd0')&&document.getElementById('rd0').classList.add('active');
+  const d0=document.getElementById('rd0');
+  if(d0)d0.classList.add('active');
   startPowerBreaths();
 }
 
@@ -1462,7 +1821,7 @@ function startExhaleHold(){
   whState='exhale-hold';
   playAndFeel('HoldLow');
   document.getElementById('pl').textContent='Hold';
-  document.getElementById('sd').textContent='Exhale & hold — relax completely';
+  document.getElementById('sd').textContent='Relaxed exhale — hold, stay soft';
   document.getElementById('cd').textContent='0';
   document.getElementById('bc').style.transition='transform 1.5s ease';
   document.getElementById('bc').style.transform='scale(.55)';
@@ -1476,8 +1835,8 @@ function startInhaleHold(){
   clearInterval(phTimer);
   whState='inhale-hold';
   playAndFeel('Hold');
-  document.getElementById('pl').textContent='Full Inhale';
-  document.getElementById('sd').textContent='Breathe in fully — hold 15 s';
+  document.getElementById('pl').textContent='Recovery';
+  document.getElementById('sd').textContent='Full inhale — hold 15 s, soften';
   document.getElementById('bc').style.transition='transform 1s ease';
   document.getElementById('bc').style.transform='scale(1.0)';
   document.getElementById('bc').classList.add('pulsing');
@@ -1506,11 +1865,11 @@ function advanceRound(){
 
   if(whRound>=tot){
     document.getElementById('pl').textContent='Complete';
-    document.getElementById('sd').textContent='Meditate — breathe freely';
+    document.getElementById('sd').textContent='Lie still — breathe freely';
     document.getElementById('cd').textContent='';
-    running=false;
-    document.getElementById('startTxt').textContent='Begin';
-    document.getElementById('tapBtn').style.display='none';
+    setCoach('Stay down for a few minutes before standing up.');
+    haptic('complete');
+    endSession();
     return;
   }
   const nd=document.getElementById('rd'+whRound);
@@ -1540,7 +1899,7 @@ function doKapRound(){
   kapCount=0;
   const pace=KAP_PACE[parseInt(document.getElementById('kapSl').value)-1];
   const N=30;
-  const passive=T.passive!==false&&T.passive;
+  const passive=T.passive===true;
 
   const seg=document.getElementById('cs'+kapRound);
   if(seg){seg.classList.remove('done');seg.classList.add('active');seg.style.background=`rgb(${CAT_RGB[T.cat]})`;}
@@ -1576,7 +1935,7 @@ function doKapRound(){
         document.getElementById('bc').style.transition='transform 1.5s ease';
         document.getElementById('bc').style.transform='scale(.65)';
         haptic('complete');
-        running=false;document.getElementById('startTxt').textContent='Begin';
+        endSession();
         return;
       }
       document.getElementById('pl').textContent='Rest';
@@ -1598,28 +1957,209 @@ function animBar(d){
   p.style.strokeDashoffset='0';
 }
 
+// CO₂ ladder sequence — fixed hold, shrinking recovery
+TECHS.find(t=>t.id==='co2table').getSeq = function(){
+  const rests=[90,75,60,45,35,30];
+  const hold = parseInt(document.getElementById('holdSel').value)||30;
+  const out=[];
+  rests.forEach((r,i)=>{
+    out.push({l:'Breathe',d:r,s:.74,sub:`Recover ${i+1} of 6`});
+    out.push({l:'Hold',   d:hold,s:.55,sub:`Hold ${i+1} of 6`});
+  });
+  return out;
+};
+
+// ──────────────────────────────────────────────────
+// DAILY PROTOCOL
+// ──────────────────────────────────────────────────
+const GOALS = [
+  {id:'winddown', name:'Wind down',      sub:'Settle · sleep · recover'},
+  {id:'hype',     name:'Get going',      sub:'Focus · energy · pre-training'},
+  {id:'immune',   name:'Anti-inflammatory', sub:'The Radboud protocol'},
+  {id:'precold',  name:'Before a plunge',sub:'On land · prep'},
+  {id:'incold',   name:'In the water',   sub:'Cold shock control'},
+  {id:'postcold', name:'After the plunge',sub:'Rewarm · afterdrop'}
+];
+
+const PERIOD_NOTE = {
+  early:     'Cortisol is near its natural daily peak. Stimulating work lands easily here — you need less of it than you think.',
+  morning:   'The window the Radboud trials used: fasted, lying down, before the day loads up.',
+  midday:    'Short sessions between tasks beat one long one. Two minutes is a real dose.',
+  afternoon: 'If you strength trained today, keep cold plunges 4–6 hours clear of the session — cold blunts the adaptation.',
+  evening:   'Anything adrenaline-driven within about three hours of bed usually costs you sleep.',
+  night:     'Slow, nasal, low effort. Nothing that raises arousal.'
+};
+
+function periodFor(h){
+  if(h>=5 && h<8)  return 'early';
+  if(h>=8 && h<11) return 'morning';
+  if(h>=11&& h<15) return 'midday';
+  if(h>=15&& h<18) return 'afternoon';
+  if(h>=18&& h<22) return 'evening';
+  return 'night';
+}
+const PERIOD_LABEL = {early:'Early morning',morning:'Morning',midday:'Midday',afternoon:'Afternoon',evening:'Evening',night:'Night'};
+
+let selGoal = null;
+
+function defaultGoal(p){
+  if(p==='early') return 'hype';
+  if(p==='morning') return 'immune';
+  return 'winddown';
+}
+
+function recommend(goal, p){
+  const R = (id,why,dur,alts,flag)=>({id,why,dur,alts:alts||[],flag:flag||''});
+
+  if(goal==='winddown'){
+    if(p==='early')  return R('resonance','Sets a calm baseline before the day loads up, and it is the one technique here you can track properly with morning HRV.',5,
+      [{id:'diaphragm',why:'If the belly mechanic still needs work'},{id:'box',why:'Calm without going limp'}]);
+    if(p==='evening'||p==='night') return R('478','Long hold, longer exhale. The standard pre-sleep pattern — four to six cycles is plenty.',5,
+      [{id:'21',why:'Same idea, no hold'},{id:'whm_recovery',why:'If the day ended tense'}]);
+    return R('physiological','Fastest way to drop acute stress between tasks. Two or three rounds often does it — you do not need the full five minutes.',3,
+      [{id:'resonance',why:'If you have five quiet minutes'},{id:'21',why:'Longer exhale, gentler'}]);
+  }
+
+  if(goal==='hype'){
+    if(p==='evening'||p==='night') return R('box','Focus without the adrenaline.',5,
+      [{id:'physiological',why:'If the goal is actually to settle'}],
+      'It is past 18:00. Kapalabhati, Bhastrika and Breath of Fire this late tend to push sleep onset back — Box Breathing gives you alertness without the arousal spike.');
+    if(p==='early')  return R('bhastrika','Both directions active. Raises arousal fast without caffeine — start on Slow and stop early if the head swims.',0,
+      [{id:'kapalabhati',why:'Gentler — passive inhale'},{id:'wimhof',why:'If you have 15 minutes'}]);
+    if(p==='afternoon') return R('kapalabhati','Good for the mid-afternoon dip: sharp, short, and it clears the head without a second coffee.',0,
+      [{id:'breathfire',why:'Steadier, more sustained'},{id:'physiological',why:'If the dip is stress, not fatigue'}]);
+    return R('breathfire','Even nasal rhythm, sustained rather than explosive. Builds heat and alertness before training.',0,
+      [{id:'bhastrika',why:'More intense'},{id:'kapalabhati',why:'Passive inhale'}]);
+  }
+
+  if(goal==='immune'){
+    if(p==='evening'||p==='night') return R('whm_recovery','The recovery breath without the hyperventilation — all of the downshift, none of the adrenaline.',5,
+      [{id:'resonance',why:'Slow and vagal'}],
+      'The anti-inflammatory protocol is an adrenaline protocol. Running it this late will likely cost you sleep — put it in tomorrow morning instead.');
+    if(p==='afternoon') return R('wimhof','Three rounds is a reasonable afternoon dose. Save the full four-round protocol for a fasted morning.',0,
+      [{id:'co2table',why:'CO₂ tolerance instead'},{id:'whm_recovery',why:'Lower intensity'}]);
+    return R('whm_immune','Four rounds, lying down, empty stomach — the protocol as it was actually run at Radboud. Remember it dampens inflammation rather than boosting immunity, so skip it if you are acutely ill.',0,
+      [{id:'wimhof',why:'Standard three rounds'},{id:'co2table',why:'Breath-hold tolerance, no hyperventilation'}]);
+  }
+
+  if(goal==='precold'){
+    return R('preplunge','Calm nasal breathing on land, then normal breathing, then in. Decide your exit time before you go anywhere near the water.',2,
+      [{id:'resonance',why:'If you have longer'}],
+      'No power breathing before entry — not in the water, not on the bank, not in the changing room. Low CO₂ removes the urge to breathe and people have drowned this way.');
+  }
+
+  if(goal==='incold'){
+    return R('coldshock','First 60–90 seconds. Long whispered exhales through pursed lips override the gasp reflex. Sound and haptics are on, so you can run this with the phone on the bank.',3,
+      [{id:'preplunge',why:'Same rhythm, slightly slower'}],
+      'Never alone in open water. Get out on the plan you set, not on how good you feel.');
+  }
+
+  if(goal==='postcold'){
+    return R('horsestance','Wide stance, knees bent, arms sweeping, nasal breathing. Heat from muscle rather than from a hot tap — rapid rewarming measurably increases afterdrop.',5,
+      [{id:'resonance',why:'Once you are warm and dressed'},{id:'whm_recovery',why:'To close the session out'}],
+      'Skip the hot shower and the sauna for now. Dry off, dress the torso first, keep moving gently for 10–15 minutes.');
+  }
+  return R('resonance','A safe default at any hour.',5,[]);
+}
+
+function openProtocol(){
+  const now = new Date();
+  const p = periodFor(now.getHours());
+  document.getElementById('pClock').textContent =
+    now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false});
+  document.getElementById('pPeriod').textContent = PERIOD_LABEL[p];
+  document.getElementById('pNote').textContent = PERIOD_NOTE[p];
+
+  if(!selGoal) selGoal = defaultGoal(p);
+  renderGoals();
+  renderRec();
+
+  hideAllScreens();
+  document.getElementById('protocol').classList.remove('hidden');
+}
+
+function closeProtocol(){
+  hideAllScreens();
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function renderGoals(){
+  const g = document.getElementById('goalGrid');
+  g.innerHTML = '';
+  GOALS.forEach(go=>{
+    const b = document.createElement('button');
+    b.className = 'goal-btn' + (go.id===selGoal ? ' sel' : '');
+    b.innerHTML = `<span class="g-name">${go.name}</span><span class="g-sub">${go.sub}</span>`;
+    b.onclick = ()=>{ selGoal = go.id; renderGoals(); renderRec(); };
+    g.appendChild(b);
+  });
+}
+
+function renderRec(){
+  const p = periodFor(new Date().getHours());
+  const rec = recommend(selGoal, p);
+  const t = TECHS.find(x=>x.id===rec.id);
+  const block = document.getElementById('recBlock');
+  block.innerHTML = '';
+  if(!t) return;
+
+  if(rec.flag){
+    const f = document.createElement('div');
+    f.className = 'rec-flag';
+    f.textContent = rec.flag;
+    block.appendChild(f);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'rec-primary ' + t.cat;
+  card.innerHTML = `
+    <div class="rec-eyebrow">${PERIOD_LABEL[p]} · ${CAT_NAMES[t.cat]}</div>
+    <div class="rec-name">${t.name}</div>
+    <div class="rec-rhythm">${t.rhythm}</div>
+    <div class="rec-why">${rec.why}</div>`;
+  const btn = document.createElement('button');
+  btn.className = 'rec-start ' + t.cat;
+  btn.textContent = 'Start';
+  btn.onclick = ()=>{ pendingDur = rec.dur; open(t.id); };
+  card.appendChild(btn);
+  block.appendChild(card);
+
+  if(rec.alts.length){
+    const wrap = document.createElement('div');
+    wrap.className = 'rec-alts';
+    rec.alts.forEach(a=>{
+      const at = TECHS.find(x=>x.id===a.id);
+      if(!at) return;
+      const row = document.createElement('button');
+      row.className = 'rec-alt';
+      row.innerHTML = `<div><div class="a-name">${at.name}</div><div class="a-why">${a.why}</div></div><div class="a-arrow">→</div>`;
+      row.onclick = ()=>{ pendingDur = null; open(at.id); };
+      wrap.appendChild(row);
+    });
+    block.appendChild(wrap);
+  }
+}
+
 // ──────────────────────────────────────────────────
 // CUSTOM TECHNIQUE BUILDER
 // ──────────────────────────────────────────────────
-const PHASE_LABELS = ['Inhale','Hold','Exhale','Hold (empty)','Inhale+','Custom'];
+const PHASE_LABELS = ['Inhale','Hold','Exhale','Hold (empty)','Inhale+','Rest'];
 
 function openBuilder(){
-  // Reset form
   document.getElementById('bName').value = '';
   document.getElementById('bDesc').value = '';
   document.getElementById('bCat').value = 'work';
   document.getElementById('bError').textContent = '';
   document.getElementById('phaseList').innerHTML = '';
-  // Add 3 default phases
   addPhaseRow('Inhale', 4);
   addPhaseRow('Hold', 4);
   addPhaseRow('Exhale', 4);
-  document.getElementById('home').classList.add('hidden');
+  hideAllScreens();
   document.getElementById('builder').classList.remove('hidden');
 }
 
 function closeBuilder(){
-  document.getElementById('builder').classList.add('hidden');
+  hideAllScreens();
   document.getElementById('home').classList.remove('hidden');
 }
 
@@ -1655,13 +2195,12 @@ function saveCustom(){
   const rows = document.querySelectorAll('#phaseList .phase-row');
   const err  = document.getElementById('bError');
 
-  if(!name){ err.textContent = 'Please enter a name.'; return; }
-  if(rows.length < 2){ err.textContent = 'Add at least 2 phases.'; return; }
+  if(!name){ err.textContent = 'Enter a name to save this technique.'; return; }
+  if(rows.length < 2){ err.textContent = 'Add at least two phases.'; return; }
 
   const phases = Array.from(rows).map(r => {
     const lbl = r.querySelector('.phase-lbl-sel').value;
     const d   = Math.max(1, Math.min(60, parseInt(r.querySelector('.dur-input').value)||4));
-    // circle scale: inhale/hold-full = 1.0, exhale/hold-empty = 0.55
     const isExpand = lbl==='Inhale'||lbl==='Inhale+'||lbl==='Hold';
     return { l: lbl, d, s: isExpand ? 1.0 : 0.55 };
   });
@@ -1680,7 +2219,6 @@ function saveCustom(){
     custom: true
   };
 
-  // Save to localStorage
   const saved = loadCustomTechs();
   saved.push(tech);
   localStorage.setItem('bw_custom', JSON.stringify(saved));
@@ -1711,6 +2249,7 @@ function renderCustomCards(){
   if(customs.length === 0){ section.style.display='none'; return; }
   section.style.display = 'block';
   customs.forEach(t => {
+    if(!TECHS.find(x=>x.id===t.id)) TECHS.push(t);
     const el = document.createElement('div');
     el.className = 'tech-card ' + t.cat;
     el.innerHTML = `
@@ -1721,20 +2260,9 @@ function renderCustomCards(){
       <div class="card-desc">${t.desc}</div>
       <button class="delete-card-btn" onclick="deleteCustom('${t.id}',event)" title="Delete">🗑</button>
     `;
-    let touchStartY=0, touchMoved=false;
-    el.addEventListener('touchstart', e=>{ touchStartY=e.touches[0].clientY; touchMoved=false; },{passive:true});
-    el.addEventListener('touchmove',  e=>{ if(Math.abs(e.touches[0].clientY-touchStartY)>8)touchMoved=true; },{passive:true});
-    el.addEventListener('touchend',   e=>{ if(!touchMoved){e.preventDefault();openCustom(t);} },{passive:false});
-    el.addEventListener('click', ()=>openCustom(t));
+    attachCardTap(el, ()=>open(t.id));
     grid.appendChild(el);
   });
-}
-
-function openCustom(t){
-  // Register temporarily in TECHS if not already there
-  const existing = TECHS.find(x=>x.id===t.id);
-  if(!existing) TECHS.push(t);
-  open(t.id);
 }
 
 // ──────────────────────────────────────────────────
@@ -1760,33 +2288,27 @@ function saveSession(tech, durationSec, cycles){
   if(h.sessions.length > 60) h.sessions = h.sessions.slice(0, 60);
   h.totalSec = (h.totalSec||0) + durationSec;
   localStorage.setItem('bw_history', JSON.stringify(h));
-  // Update home header streak badge if visible
   updateHomeStreak();
 }
 
 function getStreaks(sessions){
   if(!sessions.length) return {current:0, best:0};
-  // Build set of unique practice days (YYYY-MM-DD)
   const days = [...new Set(sessions.map(s => s.date.slice(0,10)))].sort().reverse();
   let current = 0, best = 0, streak = 1;
   const today = new Date().toISOString().slice(0,10);
   const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-  // Current streak
   if(days[0] === today || days[0] === yesterday){
     current = 1;
     for(let i=1;i<days.length;i++){
       const prev = new Date(days[i-1]), cur = new Date(days[i]);
-      const diff = (prev-cur)/86400000;
-      if(diff === 1) current++;
+      if((prev-cur)/86400000 === 1) current++;
       else break;
     }
   }
-  // Best streak
   streak = 1;
   for(let i=1;i<days.length;i++){
     const prev = new Date(days[i-1]), cur = new Date(days[i]);
-    const diff = (prev-cur)/86400000;
-    if(diff === 1){ streak++; best = Math.max(best, streak); }
+    if((prev-cur)/86400000 === 1){ streak++; best = Math.max(best, streak); }
     else streak = 1;
   }
   best = Math.max(best, current, days.length > 0 ? 1 : 0);
@@ -1794,29 +2316,27 @@ function getStreaks(sessions){
 }
 
 function updateHomeStreak(){
-  // Show a small streak indicator in the home header subtitle
   const h = loadHistory();
   const {current} = getStreaks(h.sessions);
   const p = document.querySelector('.home-hdr p');
-  if(p){
-    if(current >= 2) p.textContent = `🔥 ${current} day streak`;
-    else if(h.sessions.length > 0){
-      const totalMin = Math.round((h.totalSec||0)/60);
-      p.textContent = `${totalMin} min practiced`;
-    } else {
-      p.textContent = 'Select a technique to begin';
-    }
+  if(!p) return;
+  if(current >= 2) p.textContent = `🔥 ${current} day streak`;
+  else if(h.sessions.length > 0){
+    const totalMin = Math.round((h.totalSec||0)/60);
+    p.textContent = `${totalMin} min practiced`;
+  } else {
+    p.textContent = 'Select a technique to begin';
   }
 }
 
 function openHistory(){
   renderHistory();
-  document.getElementById('home').classList.add('hidden');
+  hideAllScreens();
   document.getElementById('history').classList.remove('hidden');
 }
 
 function closeHistory(){
-  document.getElementById('history').classList.add('hidden');
+  hideAllScreens();
   document.getElementById('home').classList.remove('hidden');
 }
 
@@ -1832,7 +2352,6 @@ function renderHistory(){
   document.getElementById('histEmpty').style.display = 'none';
   document.getElementById('histContent').style.display = 'block';
 
-  // ── Headline stats ──
   const totalMin = Math.round((h.totalSec||0)/60);
   const avgMin   = Math.round(sessions.reduce((a,s)=>a+s.durationSec,0)/sessions.length/60);
   const now = new Date();
@@ -1845,14 +2364,12 @@ function renderHistory(){
   document.getElementById('hThisWeek').textContent = thisWeek;
   document.getElementById('hAvgMin').textContent   = avgMin || '<1';
 
-  // ── Streaks ──
   const {current, best} = getStreaks(sessions);
   const sb = document.getElementById('streakBadge');
   sb.classList.toggle('active', current >= 1);
-  document.getElementById('streakTxt').textContent    = `${current} day streak`;
+  document.getElementById('streakTxt').textContent     = `${current} day streak`;
   document.getElementById('bestStreakTxt').textContent = `Best: ${best} day${best!==1?'s':''}`;
 
-  // ── Weekly bar chart ──
   const bars = document.getElementById('weekBars');
   bars.innerHTML = '';
   const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -1872,31 +2389,27 @@ function renderHistory(){
     const lbl = document.createElement('div');
     lbl.className = 'wbar-lbl';
     lbl.textContent = i===0 ? 'Today' : DAY_LABELS[d.getDay()];
-    col.appendChild(bar);
-    col.appendChild(lbl);
+    col.appendChild(bar); col.appendChild(lbl);
     bars.appendChild(col);
   }
 
-  // ── Category breakdown ──
   const catEl = document.getElementById('catBars');
   catEl.innerHTML = '';
-  const catTotals = {wind:0, work:0, hype:0};
+  const catTotals = {wind:0, work:0, cold:0, hype:0};
   sessions.forEach(s=>{ if(catTotals[s.cat]!==undefined) catTotals[s.cat]+=s.durationSec; });
   const maxCat = Math.max(...Object.values(catTotals), 1);
-  const catNames = {wind:'Wind Down', work:'Breathwork', hype:'Hype Up'};
-  ['wind','work','hype'].forEach(cat=>{
+  ['wind','work','cold','hype'].forEach(cat=>{
     const min = Math.round(catTotals[cat]/60);
     const row = document.createElement('div');
     row.className = 'cbar-row';
     row.innerHTML = `
-      <div class="cbar-name">${catNames[cat]}</div>
+      <div class="cbar-name">${CAT_NAMES[cat]}</div>
       <div class="cbar-track"><div class="cbar-fill ${cat}" style="width:${Math.round(catTotals[cat]/maxCat*100)}%"></div></div>
       <div class="cbar-val">${min} min</div>
     `;
     catEl.appendChild(row);
   });
 
-  // ── Session log ──
   const log = document.getElementById('logList');
   log.innerHTML = '';
   sessions.slice(0, 30).forEach(s=>{
@@ -1918,7 +2431,6 @@ function renderHistory(){
   });
 }
 
-// ──────────────────────────────────────────────────
 buildHome();
 renderCustomCards();
 updateHomeStreak();
